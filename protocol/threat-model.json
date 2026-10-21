@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "attacker_controls": [
+    "external_documents",
+    "ticket_text",
+    "prompt_injection_content",
+    "ordinary_agent_output",
+    "tool_intents",
+    "network_request_content"
+  ],
+  "attacker_may_obtain": [
+    "ordinary_or_leaf_credential",
+    "restricted_holder_or_session_private_key",
+    "historical_requests",
+    "historical_receipts"
+  ],
+  "attacker_actions": [
+    "modify_splice_replace_and_replay_requests",
+    "concurrent_calls",
+    "cross_tenant_cross_task_cross_service_misuse",
+    "duplicate_business_action_inducement",
+    "timeout_and_recovery_races"
+  ],
+  "trusted_components": [
+    "authorization_authority",
+    "key_registry",
+    "business_action_registry",
+    "secure_gateway",
+    "admission_state_store",
+    "protected_tools",
+    "receipt_service",
+    "audit_append_authority",
+    "independent_checkpoint_service"
+  ],
+  "untrusted_or_semitrusted_components": [
+    "llm",
+    "agent_planner",
+    "external_content",
+    "ordinary_agent_runtime",
+    "frontend",
+    "network_input"
+  ],
+  "security_goal": "Compromised planning or a restricted agent cannot create a protected tool side effect outside the current valid structured authorization.",
+  "excluded_guarantees": [
+    "semantic_correctness_of_llm_content",
+    "confidentiality_after_total_trusted_boundary_compromise",
+    "audit_integrity_after_simultaneous_main_audit_independent_audit_and_key_compromise",
+    "reversal_of_an_effect_admitted_before_the_revocation_linearization_point"
+  ]
+}
+

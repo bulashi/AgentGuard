@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "python_crypto_library": "gmssl",
+  "python_crypto_library_version": "3.2.2",
+  "signature_algorithm": "SM2-with-SM3",
+  "sm2_curve": "sm2p256v1",
+  "sm2_user_id_utf8": "1234567812345678",
+  "private_key_encoding": "HEX_64_LOWERCASE",
+  "public_key_encoding": "SM2_XY_HEX_128_LOWERCASE_NO_04_PREFIX",
+  "signature_encoding": "SM2_RS_HEX_128_LOWERCASE",
+  "hash_algorithm": "SM3",
+  "hash_encoding": "HEX_64_LOWERCASE",
+  "signed_message": "UTF8(domain_separator) || 0x00 || RFC8785_AGENTGUARD_PROFILE(payload)",
+  "private_key_storage": "SERVICE_OWNED_FILE_REFERENCE_ONLY",
+  "database_private_key_material": "FORBIDDEN"
+}

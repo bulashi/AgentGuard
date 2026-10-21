@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/common.schema.json",
+  "title": "AgentGuard Common Types",
+  "$defs": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "businessIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9\u3007\u3400-\u4dbf\u4e00-\u9fff][A-Za-z0-9\u3007\u3400-\u4dbf\u4e00-\u9fff._:()\u00b7\uff08\uff09-]*$",
+      "not": { "pattern": "[^A-Za-z0-9\u3007\u3400-\u4dbf\u4e00-\u9fff._:()\u00b7\uff08\uff09-]" },
+      "description": "Tenant/customer business identifier; exact UTF-8 binding without normalization."
+    },
+    "nullableIdentifier": {
+      "oneOf": [
+        { "$ref": "#/$defs/identifier" },
+        { "type": "null" }
+      ]
+    },
+    "serviceName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "toolName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 96,
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "toolVersion": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*$"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "nonNegativeSafeInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "positiveSafeInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "sm3Hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableSm3Hex": {
+      "oneOf": [
+        { "$ref": "#/$defs/sm3Hex" },
+        { "type": "null" }
+      ]
+    },
+    "keyPurpose": {
+      "type": "string",
+      "enum": [
+        "AUTHORIZATION_ROOT_SIGNING",
+        "AGENT_HOLDER_SIGNING",
+        "GATEWAY_EXECUTION_SIGNING",
+        "EXECUTION_RECEIPT_SIGNING",
+        "AUDIT_CHECKPOINT_SIGNING"
+      ]
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "key_id",
+        "key_purpose",
+        "encoding",
+        "value",
+        "signed_at"
+      ],
+      "properties": {
+        "algorithm": { "type": "string", "const": "SM2" },
+        "key_id": { "$ref": "#/$defs/identifier" },
+        "key_purpose": { "$ref": "#/$defs/keyPurpose" },
+        "encoding": { "type": "string", "const": "SM2_RS_HEX_128_LOWERCASE" },
+        "value": { "type": "string", "pattern": "^[0-9a-f]{128}$" },
+        "signed_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "issuer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_id", "key_id"],
+      "properties": {
+        "subject_id": { "$ref": "#/$defs/identifier" },
+        "key_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "holder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_id", "key_id"],
+      "properties": {
+        "agent_id": { "$ref": "#/$defs/identifier" },
+        "key_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "stringSet": {
+      "type": "array",
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifier" }
+    },
+    "businessStringSet": {
+      "type": "array",
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/businessIdentifier" }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ticket_ids": { "$ref": "#/$defs/stringSet" },
+        "customer_ids": { "$ref": "#/$defs/businessStringSet" },
+        "document_ids": { "$ref": "#/$defs/stringSet" }
+      },
+      "minProperties": 1
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "single_max_fen": { "$ref": "#/$defs/nonNegativeSafeInteger" },
+        "template_ids": { "$ref": "#/$defs/stringSet" }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "tool", "version", "resources", "constraints"],
+      "properties": {
+        "service": { "$ref": "#/$defs/serviceName" },
+        "tool": { "$ref": "#/$defs/toolName" },
+        "version": { "$ref": "#/$defs/toolVersion" },
+        "resources": { "$ref": "#/$defs/resources" },
+        "constraints": { "$ref": "#/$defs/constraints" }
+      }
+    },
+    "quotas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refund_total_fen", "max_tool_calls"],
+      "properties": {
+        "refund_total_fen": { "$ref": "#/$defs/nonNegativeSafeInteger" },
+        "max_tool_calls": { "$ref": "#/$defs/nonNegativeSafeInteger" }
+      }
+    },
+    "canonicalParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "ticket_id": { "$ref": "#/$defs/identifier" },
+        "customer_id": { "$ref": "#/$defs/businessIdentifier" },
+        "amount_fen": { "$ref": "#/$defs/nonNegativeSafeInteger" },
+        "template_id": { "$ref": "#/$defs/identifier" },
+        "related_business_effect_id": { "$ref": "#/$defs/identifier" },
+        "execution_id": { "$ref": "#/$defs/identifier" },
+        "receipt_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "nullableCanonicalParameters": {
+      "oneOf": [
+        { "$ref": "#/$defs/canonicalParameters" },
+        { "type": "null" }
+      ]
+    }
+  }
+}

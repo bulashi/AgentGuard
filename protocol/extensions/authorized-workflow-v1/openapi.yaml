@@ -1,0 +1,126 @@
+openapi: 3.1.0
+info:
+  title: 已授权任务协作入口增量契约
+  version: 1.0.0
+  description: >-
+    只复用服务端已保存的任务和根授权，显式启动既有四角色协作。
+    不新建任务、不重新签发根、不重置预算，不把 QUEUED 当执行成功。
+    BFF 预检不是原子准入；最终授权与副作用仍由委托、Gateway、Tool 校验。
+    本文件是源码契约，运行、Schema 校验、OpenAPI 解析均未在本轮执行。
+servers:
+  - url: http://127.0.0.1:8090
+x-agentguard-security:
+  deployment: Windows 本机受信管理通道，不是经过身份认证的企业审批 API。
+  private-key-input: forbidden
+  frozen-root-or-gateway-protocol-modified: false
+  approval-history: 保存历史不等于当前授权可执行；已有单签根不自动追溯撤销。
+  concurrency: 只读预检有竞态，工作流 task_id 唯一约束及原 Gateway 才是服务端边界。
+  cloud-data: 云端调用须显式确认并受业务资料白名单限制；白名单不是内容去标识证明。
+x-agentguard-schema-resolution:
+  network-fetch: forbidden
+  documents:
+    - schema_id: https://agentguard.local/extensions/authorized-workflow-v1/start-request.schema.json
+      local_path: start-request.schema.json
+    - schema_id: https://agentguard.local/extensions/authorized-workflow-v1/queued-response.schema.json
+      local_path: queued-response.schema.json
+    - schema_id: https://agentguard.local/schemas/workflow-start.schema.json
+      local_path: ../../schemas/workflow-start.schema.json
+    - schema_id: https://agentguard.local/schemas/common.schema.json
+      local_path: ../../schemas/common.schema.json
+paths:
+  /api/tasks/{task_id}/workflow:
+    post:
+      operationId: startExistingAuthorizedTaskWorkflow
+      summary: 运行当前已授权任务
+      description: >-
+        从只读存储读取原始 ROOT 和任务，核对签名投影、完整摘要、Holder、时间、撤销及已有运行/效果。
+        请求不能提供凭证、业务参数、预算、模型地址、API Key 或内部 workflow token。
+        已有运行或效果不从此接口恢复；若响应无法确认，先查看档案，不能自动重提。
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            $ref: ../../schemas/common.schema.json#/$defs/identifier
+      requestBody:
+        required: true
+        x-agentguard-strict-json: true
+        content:
+          application/json:
+            schema:
+              $ref: ./start-request.schema.json
+      responses:
+        '202':
+          description: 同一任务、同一模式的 QUEUED 运行 ID，不是准入或成功回执。
+          content:
+            application/json:
+              schema:
+                $ref: ./queued-response.schema.json
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '502':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/workflows:
+    post:
+      operationId: startSyntheticBusinessWorkflowWithApprovalModeGuard
+      summary: 未开启共同授权时新建并运行业务任务
+      description: >-
+        保留单工单基础业务语义。本机 BFF 开关和实际 Authority 状态在创建前检查；未知不退回单签。
+        共同授权开启时返回 COAUTH_REQUIRED，不创建任务。Authority 旧授权接口仍独立检查开关。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./start-request.schema.json
+      responses:
+        '202':
+          description: 业务任务进入队列，不是执行成功。
+          content:
+            application/json:
+              schema:
+                $ref: ./queued-response.schema.json
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '502':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required: [reason_code, message]
+      properties:
+        reason_code:
+          type: string
+          description: 本地及透传的稳定原因码，映射见 error-codes.json，不扩充基础安全枚举。
+        message:
+          type: string
+  responses:
+    Error:
+      description: 受控拒绝或未确认结果；具体状态和重试边界见 error-codes.json。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+x-agentguard-queue-response:
+  maximum-bytes: 65536
+  strict-json: true
+  required-binding: [task_id, runtime_mode]
+  accepted-state: QUEUED
+  extra-fields: forbidden
+x-agentguard-legacy-guards:
+  - /api/demos/normal
+  - /api/demos/prompt-injection

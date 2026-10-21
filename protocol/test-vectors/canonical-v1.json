@@ -1,0 +1,104 @@
+{
+  "profile": "RFC8785 + AgentGuard strict schema profile",
+  "schema_version": "1.0",
+  "vectors": [
+    {
+      "name": "property-order",
+      "input": {"b": 2, "a": 1},
+      "expected_canonical_utf8": "{\"a\":1,\"b\":2}",
+      "expected_sm3_hex": "08bee7fba31e6e50154043b578af0463bcb5a42af3e1f93b15e91939b6931c83"
+    },
+    {
+      "name": "unicode",
+      "input": {"b": 1, "a": "中文"},
+      "expected_canonical_utf8": "{\"a\":\"中文\",\"b\":1}",
+      "expected_sm3_hex": "a3ae453ab5184349ba7dcd3d64d572cc29818e51f3329da0410542c085793d70"
+    },
+    {
+      "name": "empty-array-object",
+      "input": {"empty_array": [], "empty_object": {}},
+      "expected_canonical_utf8": "{\"empty_array\":[],\"empty_object\":{}}",
+      "expected_sm3_hex": "720ac2cc9189f9cd1c17d39e40f8abf337a53108cc5286078d8843351403e5b1"
+    },
+    {
+      "name": "present-null",
+      "input": {"nullable": null, "present": 0},
+      "expected_canonical_utf8": "{\"nullable\":null,\"present\":0}",
+      "expected_sm3_hex": "148ae5e3edd7449ed18fc22c57da39b3a7e42bf1cc1200aec84a889e987d2718"
+    },
+    {
+      "name": "absent-field",
+      "input": {"present": 0},
+      "expected_canonical_utf8": "{\"present\":0}",
+      "expected_sm3_hex": "c660d3592e7a704b6afb076601e574c01b81132ab230f53789dacdef70be80a5"
+    },
+    {
+      "name": "safe-integer-boundaries",
+      "input": {"max": 9007199254740991, "min": -9007199254740991},
+      "expected_canonical_utf8": "{\"max\":9007199254740991,\"min\":-9007199254740991}",
+      "expected_sm3_hex": "ad5dd4afd58fe9502fd1672c7079e7ce26103227476dcd441f3022c289595699"
+    },
+    {
+      "name": "set-semantics",
+      "input": {
+        "resources": {"ticket_ids": ["T2", "T1"]},
+        "capabilities": [
+          {
+            "service": "z",
+            "tool": "z.read",
+            "version": "v1",
+            "resources": {"ticket_ids": ["T2", "T1"]},
+            "constraints": {}
+          },
+          {
+            "service": "a",
+            "tool": "a.read",
+            "version": "v1",
+            "resources": {"ticket_ids": ["T1"]},
+            "constraints": {}
+          }
+        ]
+      },
+      "expected_canonical_utf8": "{\"capabilities\":[{\"constraints\":{},\"resources\":{\"ticket_ids\":[\"T1\",\"T2\"]},\"service\":\"z\",\"tool\":\"z.read\",\"version\":\"v1\"},{\"constraints\":{},\"resources\":{\"ticket_ids\":[\"T1\"]},\"service\":\"a\",\"tool\":\"a.read\",\"version\":\"v1\"}],\"resources\":{\"ticket_ids\":[\"T1\",\"T2\"]}}",
+      "expected_sm3_hex": "c637858f0c539d49ae6ff6b6c7988c3381e17402a124fdcdae40f59d36b401d5"
+    }
+  ],
+  "reject_vectors": [
+    {
+      "name": "duplicate-field",
+      "raw_utf8": "{\"amount_fen\":100,\"amount_fen\":200}",
+      "reason_code": "DUPLICATE_FIELD"
+    },
+    {
+      "name": "float",
+      "raw_utf8": "{\"amount_fen\":1.5}",
+      "reason_code": "REQUEST_SCHEMA_INVALID"
+    },
+    {
+      "name": "scientific-notation",
+      "raw_utf8": "{\"amount_fen\":1e3}",
+      "reason_code": "REQUEST_SCHEMA_INVALID"
+    },
+    {
+      "name": "nan",
+      "raw_utf8": "{\"amount_fen\":NaN}",
+      "reason_code": "REQUEST_SCHEMA_INVALID"
+    },
+    {
+      "name": "integer-overflow",
+      "raw_utf8": "{\"amount_fen\":9007199254740992}",
+      "reason_code": "REQUEST_SCHEMA_INVALID"
+    },
+    {
+      "name": "malformed-json",
+      "raw_utf8": "{\"amount_fen\":100",
+      "reason_code": "MALFORMED_JSON"
+    },
+    {
+      "name": "invalid-utf8",
+      "raw_hex": "fffe7b7d",
+      "reason_code": "INVALID_UTF8"
+    }
+  ]
+}
+

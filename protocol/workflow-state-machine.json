@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "evidence_kind": "operational_not_signed_audit",
+  "stored_states": ["QUEUED", "RUNNING", "COMPLETED", "DENIED", "FAILED"],
+  "transitions": {
+    "QUEUED": ["RUNNING", "FAILED"],
+    "RUNNING": ["COMPLETED", "DENIED", "FAILED"],
+    "COMPLETED": [], "DENIED": [], "FAILED": []
+  },
+  "derived_state": {
+    "INTERRUPTED": "Stored QUEUED or RUNNING with deadline_at_ms earlier than trusted server projection time. Does not retry a business action."
+  },
+  "safety_boundary": "Workflow state cannot authorize, commit, release, or retry protected tool execution. Execution state and receipts remain authoritative."
+}

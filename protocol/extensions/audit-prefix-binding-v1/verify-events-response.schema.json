@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/audit-prefix-binding-v1/verify-events-response.schema.json",
+  "title": "Audit Prefix Binding Response V1",
+  "$comment": "Trusted audit-service observation; not a newly signed report or browser-independent cryptographic proof. The exact checkpoint and event cores are retained from one verifier invocation. Application checks digest, unique identities, request equality, and cross-field coverage invariants.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "task_id", "verification", "checkpoint", "event_bindings"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "task_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["valid", "checked_events", "latest_event_sequence", "latest_event_hash", "rollback_detected", "first_invalid_sequence"],
+      "properties": {
+        "valid": { "type": "boolean" },
+        "checked_events": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/nonNegativeSafeInteger" },
+        "latest_event_sequence": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/nonNegativeSafeInteger" },
+        "latest_event_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+        "rollback_detected": { "type": "boolean" },
+        "first_invalid_sequence": { "oneOf": [{ "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" }, { "type": "null" }] }
+      }
+    },
+    "checkpoint": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["signed_checkpoint", "signed_object_hash"],
+          "properties": {
+            "signed_checkpoint": { "$ref": "signed-checkpoint.schema.json" },
+            "signed_object_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" }
+          }
+        }
+      ]
+    },
+    "event_bindings": {
+      "type": "array", "minItems": 1, "maxItems": 100,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["event_sequence", "event_id", "event_hash", "matched", "covered", "verified_event"],
+        "properties": {
+          "event_sequence": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" },
+          "event_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+          "event_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+          "matched": { "type": "boolean" },
+          "covered": { "type": "boolean" },
+          "verified_event": { "oneOf": [{ "$ref": "event-core.schema.json" }, { "type": "null" }] }
+        }
+      }
+    }
+  }
+}

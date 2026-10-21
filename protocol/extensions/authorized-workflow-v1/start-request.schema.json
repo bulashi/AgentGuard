@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/authorized-workflow-v1/start-request.schema.json",
+  "title": "StartExistingAuthorizedTaskWorkflow",
+  "$ref": "https://agentguard.local/schemas/workflow-start.schema.json",
+  "description": "Reuse the existing operational request, with no client credential, quota, model key or business parameters. Task identity is bound by the URL."
+}

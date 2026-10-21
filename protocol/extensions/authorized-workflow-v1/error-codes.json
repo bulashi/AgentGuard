@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "namespace": "authorized-workflow-v1",
+  "scope": "BFF read-side workflow entry, not Gateway admission errors",
+  "errors": {
+    "REQUEST_SCHEMA_INVALID": {"http_status": 400, "meaning": "Invalid URL identifier, strict JSON or request fields."},
+    "CLOUD_CONFIRMATION_REQUIRED": {"http_status": 400, "meaning": "This cloud invocation lacks explicit synthetic-data confirmation."},
+    "COAUTH_REQUIRED": {"http_status": 403, "meaning": "Legacy create-and-single-sign entries are disabled before task creation."},
+    "CLOUD_TASK_SCOPE_DENIED": {"http_status": 403, "meaning": "Existing cloud task is outside the predefined synthetic tenant/ticket/customer scope."},
+    "CROSS_TASK": {"http_status": [404, 409], "meaning": "Task absent, or stored root/task/tenant binding mismatch in local preflight."},
+    "TASK_NOT_EXECUTABLE": {"http_status": 409, "meaning": "Task is not authorized, has no unique root, or root quota/expiry disagrees with task."},
+    "TASK_ALREADY_STARTED": {"http_status": 409, "meaning": "Existing execution or business effect; this endpoint is not a resume/retry path."},
+    "WORKFLOW_ALREADY_EXISTS": {"http_status": 409, "meaning": "Task already has a persistent run; including completed, denied, failed or interrupted runs."},
+    "INVALID_SIGNATURE": {"http_status": 409, "meaning": "Stored root schema, hash, signature projection or field binding cannot be checked."},
+    "ANCESTOR_REVOKED": {"http_status": 409, "meaning": "Root is already revoked in the read projection."},
+    "CREDENTIAL_EXPIRED": {"http_status": 409, "meaning": "Root is not yet active or task/root expiry has been reached."},
+    "WRONG_HOLDER": {"http_status": 409, "meaning": "Root is not held by the coordinator identity/key expected by this four-role workflow."},
+    "DELEGATION_ESCALATION": {"http_status": 409, "meaning": "Existing root cannot support the two delegation levels required by this workflow."},
+    "MODEL_MODE_UNAVAILABLE": {"http_status": 503, "meaning": "Workflow runtime or selected profile is unavailable before submission."},
+    "UPSTREAM_UNAVAILABLE": {"http_status": 503, "meaning": "Authority configuration or runtime profile could not be read before submission."},
+    "CONTROLLED_RESULT_INVALID": {"http_status": 502, "meaning": "Authority configuration cannot be checked; never assume single-sign mode."},
+    "WORKFLOW_RESULT_UNCONFIRMED": {"http_status": [502, 503], "meaning": "Submission outcome cannot be confirmed; read task/run records and never automatically retry."}
+  },
+  "upstream_known_rejections": {
+    "400": ["REQUEST_SCHEMA_INVALID", "CLOUD_CONFIRMATION_REQUIRED"],
+    "403": ["WRONG_HOLDER", "CROSS_TASK"],
+    "404": ["CROSS_TASK"],
+    "409": ["WORKFLOW_ALREADY_EXISTS"]
+  },
+  "upstream_error_shape": ["reason_code", "message"],
+  "other_upstream_status_or_shape": "WORKFLOW_RESULT_UNCONFIRMED",
+  "frozen_security_error_enum_modified": false
+}

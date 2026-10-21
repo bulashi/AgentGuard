@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/approval-payload.schema.json",
+  "title": "AgentGuard Standalone Coauthorization V1 Task Approval Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "payload_type", "approval_purpose", "verifier_audience",
+    "tenant_id", "task_id", "ticket_id", "customer_id", "capabilities_hash", "quotas",
+    "holder", "not_before", "expires_at", "delegation_depth", "policy_revision",
+    "required_signers", "challenge_id", "approval_not_before", "approval_expires_at"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "payload_type": { "type": "string", "const": "COAUTHORIZATION_TASK_APPROVAL" },
+    "approval_purpose": { "type": "string", "const": "TASK_COAUTHORIZATION_APPROVAL_V1" },
+    "verifier_audience": { "type": "string", "const": "agentguard-root-authorization" },
+    "tenant_id": { "$ref": "common.schema.json#/$defs/businessIdentifier" },
+    "task_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "ticket_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "customer_id": { "$ref": "common.schema.json#/$defs/businessIdentifier" },
+    "capabilities_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+    "quotas": { "$ref": "common.schema.json#/$defs/quotas" },
+    "holder": { "$ref": "common.schema.json#/$defs/holder" },
+    "not_before": { "$ref": "common.schema.json#/$defs/safeInteger" },
+    "expires_at": { "$ref": "common.schema.json#/$defs/safeInteger" },
+    "delegation_depth": { "type": "integer", "minimum": 0, "maximum": 16 },
+    "policy_revision": { "$ref": "common.schema.json#/$defs/identifier" },
+    "required_signers": { "$ref": "common.schema.json#/$defs/requiredSigners" },
+    "challenge_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "approval_not_before": { "$ref": "common.schema.json#/$defs/safeInteger" },
+    "approval_expires_at": { "$ref": "common.schema.json#/$defs/safeInteger" }
+  }
+}

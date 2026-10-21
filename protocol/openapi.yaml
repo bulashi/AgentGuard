@@ -1,0 +1,607 @@
+openapi: 3.1.0
+info:
+  title: AgentGuard API
+  version: 1.0.0
+  description: Capability-based protected tool execution and evidence API.
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: Service health
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [status]
+                properties:
+                  status: {type: string, const: ok}
+  /tasks:
+    post:
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/CreateTaskRequest"}
+      responses:
+        "201": {$ref: "#/components/responses/TaskCreated"}
+        "400": {$ref: "#/components/responses/Error"}
+  /tasks/{task_id}/authorize:
+    post:
+      operationId: authorizeTask
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AuthorizeTaskRequest"}
+      responses:
+        "201":
+          description: Signed root capability credential
+          content:
+            application/json:
+              schema: {$ref: "./schemas/capability-credential.schema.json"}
+        "400": {$ref: "#/components/responses/Error"}
+        "403": {$ref: "#/components/responses/Error"}
+  /credentials/{credential_id}/delegate:
+    post:
+      operationId: delegateCredential
+      parameters:
+        - $ref: "#/components/parameters/CredentialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/DelegateCredentialRequest"}
+      responses:
+        "201":
+          description: Signed delegation credential
+          content:
+            application/json:
+              schema: {$ref: "./schemas/delegation-credential.schema.json"}
+        "400": {$ref: "#/components/responses/Error"}
+        "403": {$ref: "#/components/responses/Error"}
+  /gateway/execute:
+    post:
+      operationId: executeProtectedTool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "./schemas/request-envelope.schema.json"}
+      responses:
+        "200": {$ref: "#/components/responses/ExecutionDecision"}
+        "400": {$ref: "#/components/responses/Error"}
+        "403": {$ref: "#/components/responses/ExecutionDecision"}
+        "409": {$ref: "#/components/responses/ExecutionDecision"}
+  /gateway/admit:
+    post:
+      operationId: admitProtectedTool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "./schemas/request-envelope.schema.json"}
+      responses:
+        "200": {$ref: "#/components/responses/ExecutionDecision"}
+        "400": {$ref: "#/components/responses/Error"}
+        "403": {$ref: "#/components/responses/ExecutionDecision"}
+        "409": {$ref: "#/components/responses/ExecutionDecision"}
+  /gateway/dispatch:
+    post:
+      operationId: dispatchProtectedTool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "./schemas/request-envelope.schema.json"}
+      responses:
+        "200": {$ref: "#/components/responses/ExecutionDecision"}
+        "400": {$ref: "#/components/responses/Error"}
+        "403": {$ref: "#/components/responses/ExecutionDecision"}
+        "409": {$ref: "#/components/responses/ExecutionDecision"}
+        "502": {$ref: "#/components/responses/ExecutionDecision"}
+  /credentials/{credential_id}/revoke:
+    post:
+      operationId: revokeCredential
+      parameters:
+        - $ref: "#/components/parameters/CredentialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/RevokeCredentialRequest"}
+      responses:
+        "200": {$ref: "#/components/responses/MutationAccepted"}
+        "404": {$ref: "#/components/responses/Error"}
+  /gateway/results/retrieve:
+    post:
+      operationId: retrieveExecutionResult
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "./schemas/result-retrieval-request.schema.json"}
+      responses:
+        "200": {$ref: "#/components/responses/RetrievalResult"}
+        "403": {$ref: "#/components/responses/Error"}
+  /gateway/receipts/retrieve:
+    post:
+      operationId: retrieveExecutionReceipt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "./schemas/result-retrieval-request.schema.json"}
+      responses:
+        "200":
+          description: Existing signed receipt; no execution or reservation occurs
+          content:
+            application/json:
+              schema: {$ref: "./schemas/execution-receipt.schema.json"}
+        "403": {$ref: "#/components/responses/Error"}
+  /audit/verify:
+    post:
+      operationId: verifyAuditChain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AuditVerifyRequest"}
+      responses:
+        "200":
+          description: Audit verification result
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/AuditVerifyResponse"}
+  /security-tests/{scenario}:
+    post:
+      operationId: runSecurityScenario
+      parameters:
+        - name: scenario
+          in: path
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 64}
+      responses:
+        "200":
+          description: Deterministic scenario result
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/SecurityScenarioResult"}
+        "404": {$ref: "#/components/responses/Error"}
+  /benchmarks/run:
+    post:
+      operationId: runBenchmark
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/BenchmarkRequest"}
+      responses:
+        "202": {$ref: "#/components/responses/MutationAccepted"}
+  /agents/run:
+    post:
+      operationId: runControlledAgent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AgentRunRequest"}
+      responses:
+        "200":
+          description: Deterministic multi-agent execution result and trace
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/AgentRunResponse"}
+        "400": {$ref: "#/components/responses/Error"}
+        "403": {$ref: "#/components/responses/Error"}
+  /api/runtime-profiles:
+    get:
+      operationId: getWorkflowRuntimeProfiles
+      responses:
+        "200":
+          description: Server profiles; cloud configuration is not a successful invocation.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/WorkflowRuntimeProfiles"}
+  /api/workflows:
+    post:
+      operationId: startSyntheticBusinessWorkflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "./schemas/workflow-start.schema.json"}
+      responses:
+        "202":
+          description: Workflow queued; not a completion receipt.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/WorkflowStarted"}
+        "400": {$ref: "#/components/responses/WorkflowError"}
+        "503": {$ref: "#/components/responses/WorkflowError"}
+  /agents/runtime-profiles:
+    get:
+      operationId: getInternalRuntimeProfiles
+      responses:
+        "200":
+          description: Internal profiles without credentials.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/WorkflowRuntimeProfiles"}
+  /agents/workflows:
+    post:
+      operationId: startCoordinatorWorkflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AgentRunRequest"}
+      responses:
+        "202":
+          description: Queued workflow identifier.
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/WorkflowStarted"}
+        "409": {$ref: "#/components/responses/WorkflowError"}
+        "503": {$ref: "#/components/responses/WorkflowError"}
+  /agents/workflows/{run_id}/observe:
+    post:
+      operationId: appendOperationalObservation
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 128}
+        - name: X-Workflow-Token
+          in: header
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AgentStep"}
+      responses:
+        "200":
+          description: Operational log stored; not an authorization decision.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [recorded]
+                properties:
+                  recorded: {const: true}
+        "403": {$ref: "#/components/responses/WorkflowError"}
+components:
+  parameters:
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      schema: {$ref: "#/components/schemas/Identifier"}
+    CredentialId:
+      name: credential_id
+      in: path
+      required: true
+      schema: {$ref: "#/components/schemas/Identifier"}
+  schemas:
+    Identifier:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    BusinessIdentifier:
+      $ref: "./schemas/common.schema.json#/$defs/businessIdentifier"
+    CreateTaskRequest:
+      type: object
+      additionalProperties: false
+      required: [tenant_id, ticket_id, customer_id, refund_total_fen, max_tool_calls, expires_in_seconds]
+      properties:
+        tenant_id: {$ref: "#/components/schemas/BusinessIdentifier"}
+        ticket_id: {$ref: "#/components/schemas/Identifier"}
+        customer_id: {$ref: "#/components/schemas/BusinessIdentifier"}
+        refund_total_fen: {type: integer, minimum: 0, maximum: 9007199254740991}
+        max_tool_calls: {type: integer, minimum: 0, maximum: 9007199254740991}
+        expires_in_seconds: {type: integer, minimum: 1, maximum: 86400}
+    AuthorizeTaskRequest:
+      type: object
+      additionalProperties: false
+      required: [confirmed, confirmer_id, holder_agent_id, holder_key_id, delegation_depth]
+      properties:
+        confirmed: {type: boolean, const: true}
+        confirmer_id: {$ref: "#/components/schemas/Identifier"}
+        holder_agent_id: {$ref: "#/components/schemas/Identifier"}
+        holder_key_id: {$ref: "#/components/schemas/Identifier"}
+        delegation_depth: {type: integer, minimum: 0, maximum: 16}
+    DelegateCredentialRequest:
+      type: object
+      additionalProperties: false
+      required: [holder_agent_id, holder_key_id, capabilities, quotas, not_before, expires_at]
+      properties:
+        holder_agent_id: {$ref: "#/components/schemas/Identifier"}
+        holder_key_id: {$ref: "#/components/schemas/Identifier"}
+        capabilities: {type: array, minItems: 1, items: {type: object}}
+        quotas: {type: object}
+        not_before: {type: integer, minimum: 0}
+        expires_at: {type: integer, minimum: 0}
+    RevokeCredentialRequest:
+      type: object
+      additionalProperties: false
+      required: [reason, revoked_by]
+      properties:
+        reason: {type: string, minLength: 1, maxLength: 256}
+        revoked_by: {$ref: "#/components/schemas/Identifier"}
+    TaskResponse:
+      type: object
+      additionalProperties: false
+      required: [task_id, status]
+      properties:
+        task_id: {$ref: "#/components/schemas/Identifier"}
+        status: {type: string, enum: [PENDING_AUTHORIZATION, AUTHORIZED, CLOSED]}
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [reason_code, message]
+      properties:
+        reason_code:
+          $ref: "#/components/schemas/ReasonCode"
+        message: {type: string, minLength: 1, maxLength: 512}
+        execution_id:
+          oneOf:
+            - {$ref: "#/components/schemas/Identifier"}
+            - {type: "null"}
+    ReasonCode:
+      type: string
+      enum:
+        - INVALID_UTF8
+        - MALFORMED_JSON
+        - REQUEST_SCHEMA_INVALID
+        - INVALID_CANONICAL_ENCODING
+        - DUPLICATE_FIELD
+        - UNKNOWN_FIELD
+        - INVALID_SIGNATURE
+        - UNKNOWN_KEY
+        - KEY_RETIRED_FOR_SIGNING
+        - KEY_REVOKED
+        - KEY_COMPROMISED
+        - WRONG_HOLDER
+        - WRONG_AUDIENCE
+        - CROSS_TENANT
+        - CROSS_TASK
+        - SERVICE_NOT_ALLOWED
+        - TOOL_NOT_ALLOWED
+        - TOOL_VERSION_MISMATCH
+        - RESOURCE_NOT_ALLOWED
+        - PARAMETER_CONSTRAINT_VIOLATION
+        - DELEGATION_ESCALATION
+        - ANCESTOR_REVOKED
+        - CREDENTIAL_EXPIRED
+        - REQUEST_STALE
+        - REPLAY_DETECTED
+        - BUSINESS_ACTION_INVALID
+        - BUSINESS_ACTION_CONFLICT
+        - BUDGET_EXCEEDED
+        - IDEMPOTENCY_CONFLICT
+        - EXECUTION_ENVELOPE_REPLAY
+        - EXECUTION_ENVELOPE_EXPIRED
+        - RESULT_ACCESS_DENIED
+        - TOOL_EXECUTION_UNKNOWN
+    ExecutionDecisionResponse:
+      type: object
+      additionalProperties: false
+      required: [execution_id, state, decision, reason_code, receipt]
+      properties:
+        execution_id: {$ref: "#/components/schemas/Identifier"}
+        state:
+          type: string
+          enum: [RECEIVED, DENIED, ADMITTED, DISPATCHED, UNKNOWN, RECONCILING, COMMITTED, RELEASED, RECOVERY_FAILED_FINAL]
+        decision: {type: string, enum: [ALLOW, DENY]}
+        reason_code:
+          oneOf:
+            - {type: string, const: ALLOWED}
+            - {$ref: "#/components/schemas/ReasonCode"}
+        request_hash:
+          oneOf:
+            - {$ref: "./schemas/common.schema.json#/$defs/sm3Hex"}
+            - {type: "null"}
+        credential_chain_hash:
+          oneOf:
+            - {$ref: "./schemas/common.schema.json#/$defs/sm3Hex"}
+            - {type: "null"}
+        admission_outcome:
+          oneOf:
+            - {type: string, enum: [NEW_EXECUTION, IDEMPOTENT_RETURN, EXISTING_EXECUTION, DENIED]}
+            - {type: "null"}
+        validated_command:
+          oneOf:
+            - {$ref: "./schemas/validated-tool-command.schema.json"}
+            - {type: "null"}
+        receipt:
+          oneOf:
+            - {$ref: "./schemas/execution-receipt.schema.json"}
+            - {type: "null"}
+    RetrievalResponse:
+      type: object
+      additionalProperties: false
+      required: [execution_id, state, result]
+      properties:
+        execution_id: {$ref: "#/components/schemas/Identifier"}
+        state: {type: string}
+        result:
+          oneOf:
+            - {type: object}
+            - {type: "null"}
+    AuditVerifyRequest:
+      type: object
+      additionalProperties: false
+      required: [from_sequence, include_independent_checkpoint]
+      properties:
+        from_sequence: {type: integer, minimum: 1}
+        include_independent_checkpoint: {type: boolean}
+    AuditVerifyResponse:
+      type: object
+      additionalProperties: false
+      required: [valid, checked_events, latest_event_sequence, rollback_detected]
+      properties:
+        valid: {type: boolean}
+        checked_events: {type: integer, minimum: 0}
+        latest_event_sequence: {type: integer, minimum: 0}
+        rollback_detected: {type: boolean}
+        first_invalid_sequence:
+          oneOf:
+            - {type: integer, minimum: 1}
+            - {type: "null"}
+    SecurityScenarioResult:
+      type: object
+      additionalProperties: false
+      required: [scenario, passed, expected_reason_code, unauthorized_side_effects]
+      properties:
+        scenario: {type: string}
+        passed: {type: boolean}
+        expected_reason_code: {type: string}
+        unauthorized_side_effects: {type: integer, minimum: 0}
+    BenchmarkRequest:
+      type: object
+      additionalProperties: false
+      required: [baseline, concurrency, requests]
+      properties:
+        baseline: {type: string, enum: [STATIC_CREDENTIAL, RBAC, AGENTGUARD]}
+        concurrency: {type: integer, minimum: 1, maximum: 256}
+        requests: {type: integer, minimum: 1, maximum: 1000000}
+    AgentContext:
+      type: object
+      additionalProperties: false
+      required: [ticket_id, customer_id, refund_amount_fen, prompt_text]
+      properties:
+        ticket_id: {$ref: "#/components/schemas/Identifier"}
+        customer_id: {$ref: "#/components/schemas/BusinessIdentifier"}
+        refund_amount_fen: {type: integer, minimum: 0, maximum: 9007199254740991}
+        prompt_text: {type: string, maxLength: 16384}
+        runtime_mode: {type: [string, "null"], enum: [deterministic, local, cloud, null]}
+        scenario: {type: string, enum: [normal, policy_injection]}
+        cloud_data_confirmed: {type: boolean}
+        knowledge_context: {type: object}
+        ticket_context: {type: object}
+        refund_context: {type: object}
+        workflow_run_id: {type: string, maxLength: 128}
+        workflow_token: {type: string, maxLength: 128, writeOnly: true}
+    AgentRunRequest:
+      type: object
+      additionalProperties: false
+      required: [credential_chain, context]
+      properties:
+        credential_chain:
+          type: array
+          minItems: 1
+          maxItems: 17
+          items: {type: object}
+        context: {$ref: "#/components/schemas/AgentContext"}
+    AgentStep:
+      type: object
+      additionalProperties: false
+      required: [sequence, agent_id, action, status, details]
+      properties:
+        sequence: {type: integer, minimum: 1}
+        agent_id: {$ref: "#/components/schemas/Identifier"}
+        action: {type: string, minLength: 1, maxLength: 64}
+        status: {type: string, enum: [RUNNING, COMPLETED, DENIED, FAILED]}
+        details: {type: object}
+        timestamp_ms: {type: integer, minimum: 0}
+    AgentRunResponse:
+      type: object
+      additionalProperties: false
+      required: [schema_version, planner, root_task_id, status, result, trace]
+      properties:
+        schema_version: {type: string, const: "1.0"}
+        planner: {type: string, enum: [deterministic, llm]}
+        root_task_id: {$ref: "#/components/schemas/Identifier"}
+        status: {type: string, enum: [COMPLETED, DENIED, FAILED]}
+        result: {type: object}
+        trace:
+          type: array
+          minItems: 1
+          items: {$ref: "#/components/schemas/AgentStep"}
+    WorkflowStarted:
+      type: object
+      additionalProperties: false
+      required: [run_id, task_id, state, runtime_mode]
+      properties:
+        run_id: {$ref: "#/components/schemas/Identifier"}
+        task_id: {$ref: "#/components/schemas/Identifier"}
+        state: {const: QUEUED}
+        runtime_mode: {type: string, enum: [deterministic, local, cloud]}
+    WorkflowRuntimeProfiles:
+      type: object
+      additionalProperties: false
+      required: [workflow_enabled, items]
+      properties:
+        workflow_enabled: {type: boolean}
+        items:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            type: object
+            additionalProperties: false
+            required: [mode, label, provider, model, available, verification, message]
+            properties:
+              mode: {type: string, enum: [deterministic, local, cloud]}
+              label: {type: string}
+              provider: {type: string, enum: [rules, deepseek]}
+              model: {type: [string, "null"]}
+              available: {type: boolean}
+              verification: {type: string}
+              message: {type: string}
+    WorkflowRunProjection:
+      $ref: "./schemas/workflow-run.schema.json"
+    WorkflowErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [reason_code, message]
+      properties:
+        reason_code: {type: string}
+        message: {type: string}
+  responses:
+    WorkflowError:
+      description: Operational error; does not replace security reason codes.
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/WorkflowErrorResponse"}
+    TaskCreated:
+      description: Task created, awaiting trusted authorization
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/TaskResponse"}
+    Error:
+      description: Machine-readable rejection
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/ErrorResponse"}
+    ExecutionDecision:
+      description: Signed execution or denial decision
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/ExecutionDecisionResponse"}
+    RetrievalResult:
+      description: Existing result; retrieval never re-executes or re-reserves
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/RetrievalResponse"}
+    MutationAccepted:
+      description: Mutation accepted
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [status]
+            properties:
+              status: {type: string, const: accepted}

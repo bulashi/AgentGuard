@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/public-approval-setup.schema.json",
+  "title": "AgentGuard Coauthorization V1 Public Administrative Setup",
+  "$comment": "Administrative input, not an HTTP endpoint or a trust claim. Strict JSON parsing and PublicApprovalSetup semantic checks are also required. JSON Schema cannot establish real principal independence, compare key/policy windows, match policy signer fields to key records, verify an SM2 curve point or enforce cross-registry uniqueness. No private material is accepted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy", "keys"],
+  "properties": {
+    "policy": { "$ref": "#/$defs/policy" },
+    "keys": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": { "$ref": "#/$defs/publicKey" },
+      "allOf": [
+        {
+          "contains": { "properties": { "role": { "const": "ENTERPRISE_APPROVER" } } },
+          "minContains": 1, "maxContains": 1
+        },
+        {
+          "contains": { "properties": { "role": { "const": "FINANCE_APPROVER" } } },
+          "minContains": 1, "maxContains": 1
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tenant_id", "revision", "required_signers", "not_before", "expires_at"],
+      "properties": {
+        "tenant_id": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/businessIdentifier"
+        },
+        "revision": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier"
+        },
+        "required_signers": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/requiredSigners"
+        },
+        "not_before": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/safeInteger"
+        },
+        "expires_at": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/safeInteger"
+        }
+      }
+    },
+    "publicKey": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "tenant_id", "subject_id", "principal_id", "key_id", "role", "approval_purpose",
+        "signing_purpose", "algorithm", "public_key_hex", "status", "activated_at",
+        "expires_at", "retired_at", "revoked_at", "compromised_at"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/businessIdentifier"
+        },
+        "subject_id": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier"
+        },
+        "principal_id": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier"
+        },
+        "key_id": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier"
+        },
+        "role": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/approvalRole"
+        },
+        "approval_purpose": { "type": "string", "const": "TASK_COAUTHORIZATION_APPROVAL_V1" },
+        "signing_purpose": { "type": "string", "const": "AUTHORIZATION_ROOT_SIGNING" },
+        "algorithm": { "type": "string", "const": "SM2" },
+        "public_key_hex": {
+          "type": "string", "minLength": 128, "maxLength": 128, "pattern": "^[0-9a-f]{128}$"
+        },
+        "status": { "type": "string", "const": "ACTIVE" },
+        "activated_at": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/safeInteger"
+        },
+        "expires_at": {
+          "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/safeInteger"
+        },
+        "retired_at": { "type": "null" },
+        "revoked_at": { "type": "null" },
+        "compromised_at": { "type": "null" }
+      }
+    }
+  }
+}

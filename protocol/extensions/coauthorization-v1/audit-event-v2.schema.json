@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/audit-event-v2.schema.json",
+  "title": "AgentGuard Coauthorization Audit Event V2",
+  "$comment": "Standalone extension. The frozen audit-event V1 schema remains unchanged.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "event_sequence", "event_id", "execution_id", "event_type",
+    "timestamp", "payload_hash", "evidence_reference", "previous_event_hash", "event_hash"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "2.0" },
+    "event_sequence": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" },
+    "event_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+    "execution_id": { "type": "null" },
+    "event_type": { "type": "string", "const": "COAUTH_ROOT_AUTHORIZED" },
+    "timestamp": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp" },
+    "payload_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+    "evidence_reference": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+    "previous_event_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+    "event_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" }
+  }
+}

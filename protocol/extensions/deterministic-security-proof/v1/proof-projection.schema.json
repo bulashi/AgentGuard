@@ -1,0 +1,584 @@
+{
+  "$defs": {
+    "ProofAttempt": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "wrong_customer",
+            "over_amount",
+            "legal_control"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "request": {
+          "$ref": "#/$defs/ProofRequestProjection"
+        },
+        "http_status": {
+          "maximum": 599,
+          "minimum": 100,
+          "title": "Http Status",
+          "type": "integer"
+        },
+        "gateway": {
+          "$ref": "#/$defs/ProofGatewayProjection"
+        },
+        "holder_proof_valid": {
+          "title": "Holder Proof Valid",
+          "type": "boolean"
+        },
+        "chain_valid": {
+          "title": "Chain Valid",
+          "type": "boolean"
+        },
+        "receipt_valid": {
+          "title": "Receipt Valid",
+          "type": "boolean"
+        },
+        "record_binding_valid": {
+          "title": "Record Binding Valid",
+          "type": "boolean"
+        },
+        "before": {
+          "$ref": "#/$defs/ProofObservation"
+        },
+        "after": {
+          "$ref": "#/$defs/ProofObservation"
+        },
+        "budget_unchanged": {
+          "title": "Budget Unchanged",
+          "type": "boolean"
+        },
+        "refund_delta": {
+          "title": "Refund Delta",
+          "type": "integer"
+        },
+        "notification_delta": {
+          "title": "Notification Delta",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "request",
+        "http_status",
+        "gateway",
+        "holder_proof_valid",
+        "chain_valid",
+        "receipt_valid",
+        "record_binding_valid",
+        "before",
+        "after",
+        "budget_unchanged",
+        "refund_delta",
+        "notification_delta"
+      ],
+      "title": "ProofAttempt",
+      "type": "object"
+    },
+    "ProofBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "credential_id": {
+          "title": "Credential Id",
+          "type": "string"
+        },
+        "quota_type": {
+          "enum": [
+            "refund_total_fen",
+            "max_tool_calls"
+          ],
+          "title": "Quota Type",
+          "type": "string"
+        },
+        "limit": {
+          "minimum": 0,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "reserved": {
+          "minimum": 0,
+          "title": "Reserved",
+          "type": "integer"
+        },
+        "committed": {
+          "minimum": 0,
+          "title": "Committed",
+          "type": "integer"
+        },
+        "remaining": {
+          "minimum": 0,
+          "title": "Remaining",
+          "type": "integer"
+        },
+        "version": {
+          "minimum": 0,
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "credential_id",
+        "quota_type",
+        "limit",
+        "reserved",
+        "committed",
+        "remaining",
+        "version"
+      ],
+      "title": "ProofBudget",
+      "type": "object"
+    },
+    "ProofChecks": {
+      "additionalProperties": false,
+      "properties": {
+        "denied_without_effect": {
+          "title": "Denied Without Effect",
+          "type": "boolean"
+        },
+        "legal_control_committed": {
+          "title": "Legal Control Committed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "denied_without_effect",
+        "legal_control_committed"
+      ],
+      "title": "ProofChecks",
+      "type": "object"
+    },
+    "ProofGatewayProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "anyOf": [
+            {
+              "enum": [
+                "ALLOW",
+                "DENY"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Decision"
+        },
+        "state": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "State"
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason Code"
+        },
+        "execution_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Execution Id"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProofReceiptProjection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "decision",
+        "state",
+        "reason_code",
+        "execution_id"
+      ],
+      "title": "ProofGatewayProjection",
+      "type": "object"
+    },
+    "ProofObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "observed_at_ms": {
+          "minimum": 0,
+          "title": "Observed At Ms",
+          "type": "integer"
+        },
+        "scope": {
+          "$ref": "#/$defs/ProofScope"
+        },
+        "budgets": {
+          "items": {
+            "$ref": "#/$defs/ProofBudget"
+          },
+          "title": "Budgets",
+          "type": "array"
+        },
+        "refund_rows": {
+          "minimum": 0,
+          "title": "Refund Rows",
+          "type": "integer"
+        },
+        "notification_rows": {
+          "minimum": 0,
+          "title": "Notification Rows",
+          "type": "integer"
+        },
+        "refund_amount_fen": {
+          "minimum": 0,
+          "title": "Refund Amount Fen",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "observed_at_ms",
+        "scope",
+        "budgets",
+        "refund_rows",
+        "notification_rows",
+        "refund_amount_fen"
+      ],
+      "title": "ProofObservation",
+      "type": "object"
+    },
+    "ProofReceiptProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "receipt_id": {
+          "title": "Receipt Id",
+          "type": "string"
+        },
+        "receipt_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Receipt Hash",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "signature": {
+          "$ref": "#/$defs/SignatureProjection"
+        }
+      },
+      "required": [
+        "receipt_id",
+        "receipt_hash",
+        "request_id",
+        "signature"
+      ],
+      "title": "ProofReceiptProjection",
+      "type": "object"
+    },
+    "ProofRequestProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        },
+        "tool_service": {
+          "const": "refund-service",
+          "title": "Tool Service",
+          "type": "string"
+        },
+        "tool_name": {
+          "const": "refund.create",
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "const": "v1",
+          "title": "Tool Version",
+          "type": "string"
+        },
+        "canonical_parameters": {
+          "$ref": "#/$defs/RefundParameters"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "issued_at": {
+          "minimum": 0,
+          "title": "Issued At",
+          "type": "integer"
+        },
+        "holder_key_id": {
+          "title": "Holder Key Id",
+          "type": "string"
+        },
+        "business_action_id": {
+          "title": "Business Action Id",
+          "type": "string"
+        },
+        "request_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Hash",
+          "type": "string"
+        },
+        "credential_chain_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Credential Chain Hash",
+          "type": "string"
+        },
+        "parameter_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parameter Hash",
+          "type": "string"
+        },
+        "credential_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Credential Ids",
+          "type": "array"
+        },
+        "holder_signature": {
+          "$ref": "#/$defs/SignatureProjection"
+        }
+      },
+      "required": [
+        "task_id",
+        "tool_service",
+        "tool_name",
+        "tool_version",
+        "canonical_parameters",
+        "request_id",
+        "issued_at",
+        "holder_key_id",
+        "business_action_id",
+        "request_hash",
+        "credential_chain_hash",
+        "parameter_hash",
+        "credential_ids",
+        "holder_signature"
+      ],
+      "title": "ProofRequestProjection",
+      "type": "object"
+    },
+    "ProofScope": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "task",
+          "title": "Type",
+          "type": "string"
+        },
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "task_id"
+      ],
+      "title": "ProofScope",
+      "type": "object"
+    },
+    "RefundParameters": {
+      "additionalProperties": false,
+      "properties": {
+        "ticket_id": {
+          "title": "Ticket Id",
+          "type": "string"
+        },
+        "customer_id": {
+          "title": "Customer Id",
+          "type": "string"
+        },
+        "amount_fen": {
+          "exclusiveMinimum": 0,
+          "title": "Amount Fen",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "customer_id",
+        "amount_fen"
+      ],
+      "title": "RefundParameters",
+      "type": "object"
+    },
+    "SignatureProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "const": "SM2",
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "key_id": {
+          "title": "Key Id",
+          "type": "string"
+        },
+        "key_purpose": {
+          "title": "Key Purpose",
+          "type": "string"
+        },
+        "signed_at": {
+          "minimum": 0,
+          "title": "Signed At",
+          "type": "integer"
+        },
+        "fingerprint_sm3": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Fingerprint Sm3",
+          "type": "string"
+        }
+      },
+      "required": [
+        "algorithm",
+        "key_id",
+        "key_purpose",
+        "signed_at",
+        "fingerprint_sm3"
+      ],
+      "title": "SignatureProjection",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "proof_id": {
+      "pattern": "^PROOF-[0-9a-f]{32}$",
+      "title": "Proof Id",
+      "type": "string"
+    },
+    "profile": {
+      "const": "AGENTGUARD_DETERMINISTIC_SECURITY_PROOF_V1",
+      "title": "Profile",
+      "type": "string"
+    },
+    "observation_kind": {
+      "const": "operational_test_observation_not_signed_authorization",
+      "title": "Observation Kind",
+      "type": "string"
+    },
+    "candidate_origin": {
+      "const": "deterministic_security_probe",
+      "title": "Candidate Origin",
+      "type": "string"
+    },
+    "llm_required": {
+      "const": false,
+      "title": "Llm Required",
+      "type": "boolean"
+    },
+    "created_at_ms": {
+      "minimum": 0,
+      "title": "Created At Ms",
+      "type": "integer"
+    },
+    "kind": {
+      "enum": [
+        "wrong_customer",
+        "over_amount"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "tenant_id": {
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "ticket_id": {
+      "title": "Ticket Id",
+      "type": "string"
+    },
+    "customer_id": {
+      "title": "Customer Id",
+      "type": "string"
+    },
+    "refund_limit_fen": {
+      "exclusiveMinimum": 0,
+      "title": "Refund Limit Fen",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "checks": {
+      "$ref": "#/$defs/ProofChecks"
+    },
+    "attack": {
+      "$ref": "#/$defs/ProofAttempt"
+    },
+    "control": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProofAttempt"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "proof_id",
+    "profile",
+    "observation_kind",
+    "candidate_origin",
+    "llm_required",
+    "created_at_ms",
+    "kind",
+    "task_id",
+    "tenant_id",
+    "ticket_id",
+    "customer_id",
+    "refund_limit_fen",
+    "status",
+    "checks",
+    "attack",
+    "control"
+  ],
+  "title": "SecurityProofResponse",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agentguard:extension:deterministic-security-proof:v1:projection"
+}

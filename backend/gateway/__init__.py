@@ -1,0 +1,1 @@
+"""Secure Gateway validation boundary."""

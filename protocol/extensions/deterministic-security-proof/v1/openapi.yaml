@@ -1,0 +1,55 @@
+openapi: 3.1.0
+info:
+  title: AgentGuard Deterministic Security Proof Extension
+  version: 1.0.0
+  description: Finite authenticated probes; public projections are not authorization credentials.
+paths:
+  /api/security/proofs:
+    post:
+      operationId: runDeterministicSecurityProof
+      security: [{localOperator: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [kind, confirmed]
+              properties:
+                kind: {type: string, enum: [wrong_customer, over_amount]}
+                confirmed: {type: boolean, const: true}
+      responses:
+        '200':
+          description: Observed denial and a separately evaluated positive control.
+          content:
+            application/json:
+              schema: {$ref: './proof-projection.schema.json'}
+        '401': {description: Local operator session is missing.}
+        '403': {description: Same-origin operator boundary rejected the request.}
+        '409': {description: Pending workflow or another proof; no new proof is started.}
+        '422': {description: Unsupported kind, missing confirmation or extra fields.}
+        '503': {description: No confirmed upstream outcome; not a successful proof.}
+    get:
+      operationId: listDeterministicSecurityProofs
+      security: [{localOperator: []}]
+      responses:
+        '200':
+          description: At most twenty saved public projections, not a fresh authorization verdict.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    maxItems: 20
+                    items: {$ref: './proof-projection.schema.json'}
+components:
+  securitySchemes:
+    localOperator:
+      type: apiKey
+      in: cookie
+      name: agentguard_operator

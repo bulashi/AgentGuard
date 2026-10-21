@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "scope": "administrative CLI and database function; not a public HTTP API",
+  "codes": {
+    "COAUTH_REVOCATION_INVALID_REQUEST": "The target fails the strict extension request schema before connecting.",
+    "COAUTH_REVOCATION_NOT_FOUND": "The specified key or policy does not belong to the specified tenant.",
+    "COAUTH_REVOCATION_INVALID_STATE": "Lifecycle, root binding, clock, event or response is inconsistent; no successful result is returned.",
+    "COAUTH_REVOCATION_BUSY": "A NOWAIT, deadlock or serialization conflict rolled back the transaction; explicitly retry the same target.",
+    "COAUTH_REVOCATION_UNAVAILABLE": "Migration 0019, storage or database availability is missing.",
+    "COAUTH_REVOCATION_FAILED": "Unexpected CLI failure; no verified successful result is available."
+  },
+  "unknown_commit_boundary": "A lost connection during commit is not proof that no commit occurred; reconcile by retrying the same target."
+}

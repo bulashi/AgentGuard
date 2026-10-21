@@ -1,0 +1,19 @@
+{
+  "name": "agentguard-protocol-tools",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "protocol:check": "tsx scripts/canonical-check.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "canonicalize": "2.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.6",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2"
+  }
+}
+

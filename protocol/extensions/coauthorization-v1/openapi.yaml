@@ -1,0 +1,314 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: AgentGuard Coauthorization V1 Extension API
+  version: 1.0.0
+  description: |
+    共同授权 v1 的独立扩展协议，依据 backend/authorization/app.py、
+    backend/coauthorization/contracts.py、service.py 和 verifier.py 源码描述。
+    本次仅核对源码，未运行接口、数据库、测试或部署，不声明运行验证通过。
+    AGENTGUARD_COAUTHORIZATION_REQUIRED 默认 False；启用后扩展负责审批证据校验，
+    既有 /tasks/{task_id}/authorize 会以 403 COAUTH_REQUIRED 拒绝绕过共同授权。
+    策略和审批公钥来自服务端注册表；企业和财务审批者在服务外签署审批 statement，
+    扩展不接收审批私钥。Authority 仍使用原有签发流程签署冻结 ROOT credential。
+    HTTP server 仅为本机开发访问示例，端口不是已验证的监听配置。
+    源码未声明调用者身份认证方案；本机地址、holder 标识和审批签名均不能作为
+    HTTP 调用者身份认证的声明。本协议不声明远程生产 API 或远程部署安全性。
+    所有错误仅返回 reason_code 和 message；消息不得包含凭据、签名、私钥、
+    提交的数据或解析器内部细节，客户端不得依赖 message 的具体措辞。
+servers:
+  - url: http://127.0.0.1:{port}
+    description: 仅供本机开发访问；实际端口由运行配置决定，未启动或探测服务。
+    variables:
+      port:
+        default: "8080"
+        description: 本机 Authority 端口示例，不代表已确认的监听端口。
+security: []
+x-agentguard-evidence:
+  source-inspected: true
+  runtime-verification: NOT_PERFORMED
+  deployment-scope: LOCAL_ONLY
+x-agentguard-configuration:
+  required-environment-variable: AGENTGUARD_COAUTHORIZATION_REQUIRED
+  required-default: false
+x-agentguard-schema-resolution:
+  description: |
+    $id 是离线 schema 资源标识，不是网络请求地址。SchemaStore 仅扫描传入 root
+    下的 *.schema.json 并按 $id 注册，下面的定位清单不会自动修改该行为。
+    response 完整校验时还必须注册冻结 capability-credential 和 frozen common。
+    relative_uri 均相对于本 OpenAPI 文件所在目录，用于离线资源定位。
+  resources:
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/common.schema.json
+      relative_uri: ./common.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/approval-payload.schema.json
+      relative_uri: ./approval-payload.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/approval-statement.schema.json
+      relative_uri: ./approval-statement.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/coauthorization-bundle.schema.json
+      relative_uri: ./coauthorization-bundle.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/create-challenge-request.schema.json
+      relative_uri: ./create-challenge-request.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/challenge-response.schema.json
+      relative_uri: ./challenge-response.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/coauthorization-response.schema.json
+      relative_uri: ./coauthorization-response.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/public-approval-setup.schema.json
+      relative_uri: ./public-approval-setup.schema.json
+      description: Administrative public registration input only, not an HTTP request schema.
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/history-entry.schema.json
+      relative_uri: ./history-entry.schema.json
+    - schema_id: https://agentguard.local/extensions/coauthorization-v1/task-review-response.schema.json
+      relative_uri: ./task-review-response.schema.json
+    - schema_id: https://agentguard.local/schemas/capability-credential.schema.json
+      relative_uri: ../../schemas/capability-credential.schema.json
+    - schema_id: https://agentguard.local/schemas/common.schema.json
+      relative_uri: ../../schemas/common.schema.json
+paths:
+  /extensions/coauthorization/v1/status:
+    get:
+      operationId: getCoauthorizationV1Status
+      summary: 读取共同授权配置开关
+      description: |
+        enabled 仅反映配置开关。policy_source 和 signing 是固定的来源与签名模式声明。
+        此路由不检查策略、公钥、数据库或服务是否可用，不进行签名或授权自检，
+        不返回 runtime_verified，也不能据此认定运行已验证。开关关闭时仍返回 200。
+      responses:
+        "200":
+          description: 配置开关与固定模式声明，非运行验证结果。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CoauthorizationStatusResponse"
+  /extensions/coauthorization/v1/tasks/{task_id}:
+    get:
+      operationId: getCoauthorizationV1TaskHistory
+      summary: 只读查询任务共同审批历史
+      description: |
+        每次在 REPEATABLE READ, READ ONLY 事务内读取任务及挑战的同一数据库快照。
+        不创建私钥目录、不签名、不消费挑战，不修改数据库；扩展开关关闭后仍可读历史。
+        必须安装 0015；缺表/数据库错误返回 503，不回退为空历史。
+        每页固定 20 项，额外读取 1 项确定 has_more；按 issued_at DESC, challenge_id DESC。
+        offset 分页不保证并发插入时跨页一致；每页是独立快照。
+        从固定 v1 四工具策略重建范围，只有其摘要与原始审批 payload 一致才返回。
+        同时校验 payload/bundle 摘要、持久化状态、根关联与实际冻结 ROOT 对象的
+        任务/租户/范围和摘要；对象摘要须等于凭证表摘要与挑战根摘要。但不重新验签，
+        不检查当前审批键/策略/根撤销，也不声明其目前可执行。
+        observation_kind 固定 STORED_EVIDENCE_NOT_REVALIDATED；window_state 只描述
+        observed_at 的审批窗口，不代表当前策略/密钥有效性或浏览器实时判断。
+        未消费挑战没有 signed_bundle；系统没有持久化单独一方的待提交签名，
+        不允许由挑战存在推断企业或财务已审批。
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+        - name: offset
+          in: query
+          schema: {type: integer, minimum: 0, maximum: 1000000, default: 0}
+      responses:
+        "200":
+          description: 持久化审批历史快照，不是当前授权的验证结论。
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/TaskReviewResponse"}
+        "400": {$ref: "#/components/responses/BadRequest"}
+        "409": {$ref: "#/components/responses/Conflict"}
+        "503": {$ref: "#/components/responses/Unavailable"}
+  /extensions/coauthorization/v1/tasks/{task_id}/challenges:
+    post:
+      operationId: createCoauthorizationV1Challenge
+      summary: 为待授权任务创建审批 challenge
+      description: |
+        请求仅允许 holder_agent_id、holder_key_id、delegation_depth，三项均必填。
+        服务端从可信任务、策略、公钥与 holder 注册信息构造审批 payload，
+        不允许调用者提交或扩展 capabilities。响应完整公开四种工具的 service、
+        tool、version、resources、constraints，供审批者核对实际授权范围。
+        payload.capabilities_hash 必须等于
+        SM3(canonicalize({"capabilities": task_capabilities}))，使用冻结集合归一化规则；
+        approval_payload_hash 为 SM3(canonicalize(payload))。JSON Schema 只约束结构，
+        不计算 hash，也不比较任务资源绑定或跨字段一致性。
+        signature_domain 固定为 AGENTGUARD|TASK_COAUTHORIZATION_APPROVAL|V1；
+        审批者在该域签署引用 approval_payload_hash 的 approval statement。
+        返回的 challenge_status 固定 PENDING。相同未过期且范围一致的 pending challenge
+        可返回原 challenge；不同 holder 或范围与现有 pending challenge 冲突时返回 409。
+        过期或策略 revision 已变化的 pending challenge 可被撤销并重新创建。
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        description: 严格 UTF-8 JSON；拒绝重复 key、浮点数、科学计数法与额外字段。
+        x-agentguard-reject-duplicate-json-keys: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChallengeRequest"
+      responses:
+        "200":
+          description: PENDING challenge、审批 payload、完整四工具范围及固定签名域。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChallengeResponse"
+        "400": {$ref: "#/components/responses/BadRequest"}
+        "403": {$ref: "#/components/responses/Forbidden"}
+        "404": {$ref: "#/components/responses/Disabled"}
+        "409": {$ref: "#/components/responses/Conflict"}
+        "503": {$ref: "#/components/responses/Unavailable"}
+  /extensions/coauthorization/v1/tasks/{task_id}/authorize:
+    post:
+      operationId: authorizeCoauthorizationV1Task
+      summary: 校验外部共同审批证据并签发或返回冻结 ROOT
+      description: |
+        请求体直接是 coauthorization-bundle，不增加 bundle 包装、私钥或公钥字段。
+        必须为 application/json，原始请求体最多 32768 UTF-8 bytes，逐层拒绝重复 key。
+        严格解析还拒绝无效 UTF-8、浮点数、科学计数法和安全整数范围之外的整数。
+        大小限制和重复 key 拒绝属于原始请求处理要求，JSON Schema 无法替代该步骤；
+        Content-Length 也不是本协议定义的校验依据。
+        校验当前可信任务、策略、challenge、公钥生命周期与两个独立审批签名后，
+        challenge 消费和原有 ROOT 签发持久化在同一数据库事务内进行。
+        新签发返回 200、reused=false；相同 canonical signed bundle 的重试只返回
+        原有 ROOT、reused=true，仍重新校验当前任务、策略、公钥、ROOT 及 challenge
+        生命周期，且返回时 challenge 必须未过期。challenge 过期后不保证幂等成功，
+        相同已消费 challenge 提交不同 canonical signed bundle 返回 409。
+        已消费挑战重取时原根锁被委托、准入或撤销占用，也返回 409
+        COAUTH_CHALLENGE_CONFLICT，调用者仅可重试相同完整签名包；不为避免冲突重复签发。
+        bundle_hash 为 SM3(canonicalize(包含审批签名的完整 bundle))；冻结 canonical
+        profile 不对 approvals 数组作集合排序，改变其顺序不能视为相同 canonical bundle。
+        root_credential_id 等于 credential.payload.credential_id，root_credential_hash
+        为包含签名的完整 credential 的 canonical SM3。credential 直接引用冻结 ROOT schema，
+        不复制、替换或放宽 ROOT 结构，也不向 ROOT 加入共同授权扩展字段。
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        description: 原始共同审批 bundle JSON，不是字符串或包含 bundle 属性的包装对象。
+        x-agentguard-max-body-bytes: 32768
+        x-agentguard-reject-duplicate-json-keys: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CoauthorizationBundle"
+      responses:
+        "200":
+          description: 新签发或通过当前生命周期重验后返回的原有冻结 ROOT。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CoauthorizationResponse"
+        "400": {$ref: "#/components/responses/BadRequest"}
+        "403": {$ref: "#/components/responses/Forbidden"}
+        "404": {$ref: "#/components/responses/Disabled"}
+        "409": {$ref: "#/components/responses/Conflict"}
+        "503": {$ref: "#/components/responses/Unavailable"}
+components:
+  parameters:
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      description: 冻结 Identifier，长度 1 至 128；不得由路径参数改变审批 payload 的 task 绑定。
+      schema:
+        $ref: https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier
+  schemas:
+    CreateChallengeRequest:
+      $ref: https://agentguard.local/extensions/coauthorization-v1/create-challenge-request.schema.json
+    ChallengeResponse:
+      $ref: https://agentguard.local/extensions/coauthorization-v1/challenge-response.schema.json
+    CoauthorizationBundle:
+      $ref: https://agentguard.local/extensions/coauthorization-v1/coauthorization-bundle.schema.json
+    CoauthorizationResponse:
+      $ref: https://agentguard.local/extensions/coauthorization-v1/coauthorization-response.schema.json
+    TaskReviewResponse:
+      $ref: https://agentguard.local/extensions/coauthorization-v1/task-review-response.schema.json
+    AuthorizationAuditEvidence:
+      $ref: https://agentguard.local/extensions/coauthorization-v1/authorization-audit-evidence.schema.json
+    CoauthorizationAuditEventV2:
+      $ref: https://agentguard.local/extensions/coauthorization-v1/audit-event-v2.schema.json
+    CoauthorizationStatusResponse:
+      type: object
+      additionalProperties: false
+      required: [schema_version, enabled, policy_source, signing]
+      properties:
+        schema_version: {type: string, const: "1.0"}
+        enabled:
+          type: boolean
+          description: 仅反映 AGENTGUARD_COAUTHORIZATION_REQUIRED 配置，不表示运行自检通过。
+        policy_source: {type: string, const: SERVER_REGISTERED_PUBLIC_KEYS}
+        signing: {type: string, const: EXTERNAL_APPROVERS_ONLY}
+    Error:
+      type: object
+      additionalProperties: false
+      required: [reason_code, message]
+      properties:
+        reason_code:
+          type: string
+          description: 稳定原因码；具体映射见 responses，其他共同授权校验错误默认 403。
+        message:
+          type: string
+          description: 通用错误说明，不回显提交的数据、凭据、签名、私钥或解析器内部细节。
+  responses:
+    BadRequest:
+      description: |
+        400 COAUTH_INVALID_BUNDLE 或 REQUEST_SCHEMA_INVALID。前者包括 bundle 的
+        原始 JSON、类型、字节上限、重复 key、Content-Type 和 schema 校验失败；
+        后者包括 challenge 请求及路径 Identifier 校验失败。错误不包含凭据。
+      x-agentguard-reason-codes: [COAUTH_INVALID_BUNDLE, REQUEST_SCHEMA_INVALID]
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/Error"}
+    Forbidden:
+      description: |
+        403 其余共同授权校验失败，例如任务或策略过期、challenge 过期或状态错误、
+        身份或范围不符、审批者不独立、公钥不可用、签名无效、ROOT 撤销或失效。
+        原有签发或密钥校验拒绝也使用相应原因码。COAUTH_REQUIRED 用于启用扩展时
+        拒绝原有授权入口绕过审批；本 OpenAPI 不重新定义该原有入口。
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/Error"}
+    Disabled:
+      description: 404 COAUTH_DISABLED，仅表示扩展开关关闭；status 路由仍可读取配置。
+      x-agentguard-reason-codes: [COAUTH_DISABLED]
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/Error"}
+    Conflict:
+      description: |
+        409 COAUTH_CHALLENGE_CONFLICT、COAUTH_IDEMPOTENCY_CONFLICT 或
+        COAUTH_TASK_NOT_AUTHORIZABLE。分别表示 challenge 范围或消费冲突、
+        已消费 challenge 的签名 bundle 不同、任务不存在或不符合当前授权状态。
+      x-agentguard-reason-codes:
+        - COAUTH_CHALLENGE_CONFLICT
+        - COAUTH_IDEMPOTENCY_CONFLICT
+        - COAUTH_TASK_NOT_AUTHORIZABLE
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/Error"}
+    Unavailable:
+      description: 503 COAUTH_REGISTRY_UNAVAILABLE 或 COAUTH_STORED_EVIDENCE_INVALID，存储不可用或历史结构/摘要/关联不一致。
+      x-agentguard-reason-codes: [COAUTH_REGISTRY_UNAVAILABLE, COAUTH_STORED_EVIDENCE_INVALID]
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/Error"}
+x-agentguard-bff-routing:
+  source: backend/ui_api/app.py and backend/ui_api/service.py
+  paths:
+    - /api/extensions/coauthorization/v1/status
+    - /api/extensions/coauthorization/v1/tasks/{task_id}
+    - /api/extensions/coauthorization/v1/tasks/{task_id}/challenges
+    - /api/extensions/coauthorization/v1/tasks/{task_id}/authorize
+  behavior: |
+    BFF 路由仅代理上述 Authority 操作，不持有审批私钥，不替任何主体签名。
+    原始 bundle 最多 32768 bytes，先严格校验，再以原始字节转发，不重序列化。
+    Authority 响应最多 2097152 bytes，严格 JSON、Schema、任务与摘要绑定均需符合。
+    没有自动重试。授权请求的超时、非确定拒绝状态或无效响应报告
+    COAUTH_RESULT_UNCONFIRMED (502 或 503)，不能声称根授权未签发；需读取历史。
+    只有错误对象恰好包含 reason_code/message、message 为字符串、原因码已知且
+    与 400/403/404/409 状态匹配，才认定为确定拒绝；其它 4xx 同样报告未确认。
+    共同授权前后端调用仍为本机受信管理通道，不是企业登录审批系统。
+x-agentguard-authorization-audit:
+  implementation_status: SOURCE_WRITTEN_NOT_EXECUTED
+  required_migration: 0016_coauthorization_audit_v2.sql
+  event_schema: "#/components/schemas/CoauthorizationAuditEventV2"
+  evidence_schema: "#/components/schemas/AuthorizationAuditEvidence"
+  behavior: |
+    仅新根签发在原事务内写入一份共同审批 Outbox，同包取回不补写历史事件。
+    event schema_version 为 2.0，execution_id 为 null，完整 evidence payload 为 1.0。
+    原 v1 审计 Schema/域/哈希编码不变。追加、独立检查点及历史信任均未运行验收。
+    本节不新增 HTTP 签名或事件提交接口，不改变既有根授权响应；根授权响应不表示事件已经追加或独立锚定。

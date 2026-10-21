@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/approval-statement.schema.json",
+  "title": "AgentGuard Standalone Coauthorization V1 Signed Approval Statement",
+  "$ref": "common.schema.json#/$defs/approvalStatement"
+}

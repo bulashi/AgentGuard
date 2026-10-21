@@ -1,0 +1,17 @@
+{
+  "$id": "https://agentguard.local/extensions/dispatch-revocation/v1/verify-revoked-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "confirmed": {
+      "const": true,
+      "title": "Confirmed",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "confirmed"
+  ],
+  "title": "VerifyRevokedRequest",
+  "type": "object"
+}

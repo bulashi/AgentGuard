@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/evidence-projection-v1/source-verification.schema.json",
+  "title": "BFF Signed Source Verification",
+  "description": "Read-only server observations. Not a new signature, authorization decision, independent checkpoint proof, or external business effect proof.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profile", "schema_valid", "stored_hash_valid", "row_binding_valid", "execution_binding_valid"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "profile": { "enum": ["CREDENTIAL_ROW_BINDING_V1", "RECEIPT_EXECUTION_BINDING_V1"] },
+    "schema_valid": { "type": "boolean" },
+    "stored_hash_valid": { "type": "boolean" },
+    "row_binding_valid": { "type": "boolean" },
+    "execution_binding_valid": { "type": ["boolean", "null"] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "profile": { "const": "CREDENTIAL_ROW_BINDING_V1" } } },
+      "then": { "properties": { "execution_binding_valid": { "type": "null" } } },
+      "else": { "properties": { "execution_binding_valid": { "type": "boolean" } } }
+    }
+  ]
+}

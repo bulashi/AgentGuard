@@ -1,0 +1,174 @@
+{
+  "$defs": {
+    "BusinessObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "notification_rows": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Notification Rows",
+          "type": "integer"
+        },
+        "refund_amount_fen": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Refund Amount Fen",
+          "type": "integer"
+        },
+        "refund_rows": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Refund Rows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "refund_rows",
+        "notification_rows",
+        "refund_amount_fen"
+      ],
+      "title": "BusinessObservation",
+      "type": "object"
+    }
+  },
+  "$id": "https://agentguard.local/extensions/dispatch-revocation/v1/verify-revoked-response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "after": {
+      "$ref": "#/$defs/BusinessObservation"
+    },
+    "before": {
+      "$ref": "#/$defs/BusinessObservation"
+    },
+    "budget_unchanged": {
+      "title": "Budget Unchanged",
+      "type": "boolean"
+    },
+    "chain_signature_valid": {
+      "title": "Chain Signature Valid",
+      "type": "boolean"
+    },
+    "credential_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Credential Id",
+      "type": "string"
+    },
+    "execution_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Execution Id"
+    },
+    "holder_key_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Holder Key Id",
+      "type": "string"
+    },
+    "holder_proof_valid": {
+      "title": "Holder Proof Valid",
+      "type": "boolean"
+    },
+    "new_holder_proof": {
+      "const": true,
+      "default": true,
+      "title": "New Holder Proof",
+      "type": "boolean"
+    },
+    "observed_at_ms": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Observed At Ms",
+      "type": "integer"
+    },
+    "reason_code": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "title": "Reason Code",
+      "type": "string"
+    },
+    "receipt_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Receipt Id"
+    },
+    "receipt_valid": {
+      "title": "Receipt Valid",
+      "type": "boolean"
+    },
+    "record_binding_valid": {
+      "title": "Record Binding Valid",
+      "type": "boolean"
+    },
+    "request_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Hash",
+      "type": "string"
+    },
+    "request_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "task_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "credential_id",
+    "status",
+    "reason_code",
+    "request_id",
+    "request_hash",
+    "holder_key_id",
+    "holder_proof_valid",
+    "chain_signature_valid",
+    "receipt_valid",
+    "record_binding_valid",
+    "execution_id",
+    "receipt_id",
+    "before",
+    "after",
+    "budget_unchanged",
+    "observed_at_ms"
+  ],
+  "title": "RevocationVerificationResponse",
+  "type": "object"
+}

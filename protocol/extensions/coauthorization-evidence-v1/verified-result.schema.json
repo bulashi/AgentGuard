@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-evidence-v1/verified-result.schema.json",
+  "title": "AgentGuard Scoped Coauthorization Verification Result V1",
+  "$comment": "A result from an actual successful invocation only. It is not a signed attestation, execution permission, test-suite result, live state proof or competition acceptance record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "verification_scope", "verified", "task_id", "root_credential_id",
+    "approval_payload_hash", "root_credential_hash", "authorized_at_claim", "observed_at",
+    "verified_subject_ids", "verified_principal_ids", "checked_events",
+    "authorization_event_sequence", "checkpoint_sequence", "checkpoint_latest_event_sequence",
+    "trusted_context_sha256", "trusted_checkpoint_sha256", "package_sha256",
+    "authorizes_execution", "proves_current_revocation", "proves_challenge_consumption",
+    "proves_business_side_effects", "proves_real_principal_independence",
+    "proves_all_independent_anchors", "proves_other_event_payloads", "proves_latest_chain_head",
+    "proves_trusted_wall_clock"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "verification_scope": { "const": "COAUTHORIZATION_SIGNATURES_AND_PINNED_AUDIT_PREFIX" },
+    "verified": { "const": true },
+    "task_id": { "$ref": "#/$defs/identifier" },
+    "root_credential_id": { "$ref": "#/$defs/identifier" },
+    "approval_payload_hash": { "$ref": "#/$defs/digest" },
+    "root_credential_hash": { "$ref": "#/$defs/digest" },
+    "authorized_at_claim": { "$ref": "#/$defs/time" },
+    "observed_at": { "$ref": "#/$defs/time" },
+    "verified_subject_ids": { "$ref": "#/$defs/twoIdentities" },
+    "verified_principal_ids": { "$ref": "#/$defs/twoIdentities" },
+    "checked_events": { "type": "integer", "minimum": 1, "maximum": 10000 },
+    "authorization_event_sequence": { "type": "integer", "minimum": 1, "maximum": 10000 },
+    "checkpoint_sequence": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" },
+    "checkpoint_latest_event_sequence": { "type": "integer", "minimum": 1, "maximum": 10000 },
+    "trusted_context_sha256": { "$ref": "#/$defs/digest" },
+    "trusted_checkpoint_sha256": { "$ref": "#/$defs/digest" },
+    "package_sha256": { "$ref": "#/$defs/digest" },
+    "authorizes_execution": { "const": false },
+    "proves_current_revocation": { "const": false },
+    "proves_challenge_consumption": { "const": false },
+    "proves_business_side_effects": { "const": false },
+    "proves_real_principal_independence": { "const": false },
+    "proves_all_independent_anchors": { "const": false },
+    "proves_other_event_payloads": { "const": false },
+    "proves_latest_chain_head": { "const": false },
+    "proves_trusted_wall_clock": { "const": false }
+  },
+  "$defs": {
+    "identifier": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$", "minLength": 64, "maxLength": 64 },
+    "time": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp" },
+    "twoIdentities": {
+      "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifier" }
+    }
+  }
+}

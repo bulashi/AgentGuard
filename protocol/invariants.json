@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "invariants": [
+    {"id": "INV-01", "name": "Gateway is the only protected execution entry", "assertion": "A protected business side effect requires successful Secure Gateway admission."},
+    {"id": "INV-02", "name": "Delegation monotonically attenuates", "assertion": "Every child capability, resource, constraint, quota, lifetime, and depth is no broader than its parent."},
+    {"id": "INV-03", "name": "Every credential level enforces cumulative quota", "assertion": "Root, intermediate, and leaf reserved plus committed usage never exceeds each applicable limit."},
+    {"id": "INV-04", "name": "Ancestor revocation propagates", "assertion": "A revoked ancestor prevents every descendant from receiving new protected admission."},
+    {"id": "INV-05", "name": "One side effect per business idempotency key", "assertion": "A business idempotency key produces at most one protected business effect."},
+    {"id": "INV-06", "name": "Requests are fresh and non-replayable", "assertion": "Duplicate request IDs and requests outside the freshness window cannot create a new effect."},
+    {"id": "INV-07", "name": "Authorized parameters equal executed parameters", "assertion": "Protected tools execute only canonical parameters carried by the validated command and signed gateway envelope."},
+    {"id": "INV-08", "name": "Decisions and effects have verifiable evidence", "assertion": "Parseable ALLOW and DENY decisions produce signed receipts; raw rejection produces a rejected audit event; all enter the audit chain."},
+    {"id": "INV-09", "name": "Agents have no gateway bypass credential", "assertion": "Ordinary agents possess neither protected-tool internal credentials nor gateway, receipt, or audit signing keys."},
+    {"id": "INV-10", "name": "Secrets and sensitive data are not logged in plaintext", "assertion": "Private keys, bearer tokens, full prompts, and sensitive customer content are excluded from logs."},
+    {"id": "INV-11", "name": "One business action cannot replay with changed parameters", "assertion": "A reused business idempotency key with a different parameter hash is rejected as IDEMPOTENCY_CONFLICT."},
+    {"id": "INV-12", "name": "Child credentials bind the actual signed parent", "assertion": "Every child contains and verifies both the parent credential ID and signed-object SM3 hash."},
+    {"id": "INV-13", "name": "Protected tools trust only signed gateway commands", "assertion": "A protected tool requires a valid, purpose-bound GatewayExecutionEnvelope."},
+    {"id": "INV-14", "name": "Gateway-to-tool commands are non-replayable", "assertion": "An execution attempt ID is accepted once and an expired envelope is never executed."},
+    {"id": "INV-15", "name": "Result retrieval reauthorizes", "assertion": "Result and receipt retrieval recheck current chain, key, revocation, tenant, task, freshness, and replay without execution or reservation."},
+    {"id": "INV-16", "name": "LLM cannot choose business action identity", "assertion": "A trusted business action policy and registry create or resolve side-effect action identity and trusted action slots."}
+  ]
+}
+

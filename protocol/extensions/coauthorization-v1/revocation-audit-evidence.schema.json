@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/revocation-audit-evidence.schema.json",
+  "title": "AgentGuard Coauthorization Revocation Audit Page V1",
+  "$comment": "A complete page of a durable registry observation, not a separate signature or a claim that admitted effects were cancelled.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "record_type", "revocation_event_id", "tenant_id", "source_kind",
+    "source_identifier", "observed_at", "observation_context", "database_actor", "capture_kind",
+    "captured_at", "page_number", "page_count", "matched_root_count", "created_root_revocation_count", "roots"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "record_type": { "const": "COAUTH_REVOCATION_APPLIED_V1" },
+    "revocation_event_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" },
+    "tenant_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/businessIdentifier" },
+    "source_kind": { "enum": ["APPROVAL_KEY_REVOKED", "APPROVAL_KEY_COMPROMISED", "APPROVAL_POLICY_REVOKED", "AUTHORIZATION_WITHDRAWN"] },
+    "source_identifier": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+    "observed_at": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp" },
+    "observation_context": { "enum": ["REGISTRY_STATUS_UPDATE", "MIGRATION_RECONCILIATION", "EXPLICIT_WITHDRAWAL"] },
+    "database_actor": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "capture_kind": { "enum": ["TRANSACTIONAL_CAPTURE", "LEGACY_OBSERVATION_LINK"] },
+    "captured_at": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp" },
+    "page_number": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" },
+    "page_count": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" },
+    "matched_root_count": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/nonNegativeSafeInteger" },
+    "created_root_revocation_count": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/nonNegativeSafeInteger" },
+    "roots": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/root" } }
+  },
+  "$defs": {
+    "root": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "root_credential_id", "root_credential_hash", "task_id", "challenge_id", "policy_revision",
+        "approval_payload_hash", "bundle_hash", "enterprise_key_id", "finance_key_id", "root_revocation_created",
+        "revoked_at", "revoked_by", "revocation_reason"
+      ],
+      "properties": {
+        "root_credential_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "root_credential_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+        "task_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "challenge_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "policy_revision": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "approval_payload_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+        "bundle_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+        "enterprise_key_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "finance_key_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "root_revocation_created": { "type": "boolean" },
+        "revoked_at": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp" },
+        "revoked_by": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "revocation_reason": { "type": "string", "minLength": 1, "maxLength": 512 }
+      }
+    }
+  }
+}

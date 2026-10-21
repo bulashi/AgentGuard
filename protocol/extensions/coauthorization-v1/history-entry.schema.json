@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/history-entry.schema.json",
+  "title": "AgentGuard Coauthorization V1 Stored History Entry",
+  "$comment": "Stored evidence only, not a current signature/key/policy/revocation verification. Python verifies payload and full bundle hashes, exact fixed-policy capability reconstruction, window equality and root association. Schema does not compute hashes or compare timestamps.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["challenge_id", "challenge_status", "window_state", "issued_at", "expires_at", "consumed_at", "revoked_at", "payload", "approval_payload_hash", "task_capabilities", "bundle_hash", "signed_bundle", "root_credential_id", "root_credential_hash"],
+  "properties": {
+    "challenge_id": {"$ref": "./common.schema.json#/$defs/identifier"},
+    "challenge_status": {"enum": ["PENDING", "CONSUMED", "REVOKED"]},
+    "window_state": {"enum": ["NOT_YET_VALID", "OPEN", "EXPIRED"]},
+    "issued_at": {"$ref": "./common.schema.json#/$defs/safeInteger"},
+    "expires_at": {"$ref": "./common.schema.json#/$defs/safeInteger"},
+    "consumed_at": {"anyOf": [{"$ref": "./common.schema.json#/$defs/safeInteger"}, {"type": "null"}]},
+    "revoked_at": {"anyOf": [{"$ref": "./common.schema.json#/$defs/safeInteger"}, {"type": "null"}]},
+    "payload": {"$ref": "./approval-payload.schema.json"},
+    "approval_payload_hash": {"$ref": "./common.schema.json#/$defs/sm3Hex"},
+    "task_capabilities": {"$ref": "./challenge-response.schema.json#/properties/task_capabilities"},
+    "bundle_hash": {"anyOf": [{"$ref": "./common.schema.json#/$defs/sm3Hex"}, {"type": "null"}]},
+    "signed_bundle": {"anyOf": [{"$ref": "./coauthorization-bundle.schema.json"}, {"type": "null"}]},
+    "root_credential_id": {"anyOf": [{"$ref": "./common.schema.json#/$defs/identifier"}, {"type": "null"}]},
+    "root_credential_hash": {"anyOf": [{"$ref": "./common.schema.json#/$defs/sm3Hex"}, {"type": "null"}]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"challenge_status": {"const": "CONSUMED"}}},
+      "then": {
+        "properties": {
+          "consumed_at": {"$ref": "./common.schema.json#/$defs/safeInteger"},
+          "revoked_at": {"type": "null"},
+          "bundle_hash": {"$ref": "./common.schema.json#/$defs/sm3Hex"},
+          "signed_bundle": {"$ref": "./coauthorization-bundle.schema.json"},
+          "root_credential_id": {"$ref": "./common.schema.json#/$defs/identifier"},
+          "root_credential_hash": {"$ref": "./common.schema.json#/$defs/sm3Hex"}
+        }
+      },
+      "else": {
+        "properties": {
+          "consumed_at": {"type": "null"}, "bundle_hash": {"type": "null"},
+          "signed_bundle": {"type": "null"}, "root_credential_id": {"type": "null"},
+          "root_credential_hash": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"challenge_status": {"const": "REVOKED"}}},
+      "then": {"properties": {"revoked_at": {"$ref": "./common.schema.json#/$defs/safeInteger"}}},
+      "else": {"properties": {"revoked_at": {"type": "null"}}}
+    }
+  ]
+}

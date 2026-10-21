@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "evidence_kind": "operational_not_signed_audit",
+  "entry": "/api/tasks/{task_id}/workflow",
+  "workflow_machine": "../../workflow-state-machine.json",
+  "submission_observations": ["IDLE", "REQUESTING", "QUEUED_CONFIRMED", "REFUSED", "RESULT_UNCONFIRMED", "STORED_RUN_OBSERVED"],
+  "submission_transitions": {
+    "IDLE": ["REQUESTING"],
+    "REQUESTING": ["QUEUED_CONFIRMED", "REFUSED", "RESULT_UNCONFIRMED"],
+    "REFUSED": ["IDLE"],
+    "QUEUED_CONFIRMED": [],
+    "RESULT_UNCONFIRMED": ["STORED_RUN_OBSERVED"],
+    "STORED_RUN_OBSERVED": []
+  },
+  "observation_storage": "Browser/App memory only; uncertainty survives tab navigation, not page reload. These are not new task, workflow or execution database enum values.",
+  "unknown_resolution": "Clear the App warning only when a later read of the bound task contains its persistent workflow. Absence of a workflow never proves failure or authorizes a retry.",
+  "preflight": [
+    "task.status = AUTHORIZED and request task_id equals stored task/root task_id",
+    "exactly one schema-valid stored ROOT, matching projected hash and signature validity",
+    "stored task tenant, quota and expiry equal ROOT bindings",
+    "root not revoked and not_before <= server_time < root/task expires_at",
+    "coordinator Holder/key and delegation_depth >= 2",
+    "no previous workflow, execution, refund or notification in the read projection",
+    "runtime profile available; cloud explicitly confirmed and within synthetic scope"
+  ],
+  "write_boundary": "Read root/task; submit one workflow. Do not create/authorize a task, allocate new credential budgets, execute a tool, or reset a previous run.",
+  "concurrency_boundary": "Preflight is non-atomic. Existing unique workflow task_id prevents two persistent workflow runs; delegation/Gateway/Tool remain the authorization and effect barriers.",
+  "unknown_result_boundary": "No automatic retry or resume from uncertain submission, QUEUED, RUNNING or derived INTERRUPTED; inspect durable evidence first.",
+  "existing_root_governance": "Enabling coauthorization does not retroactively revoke an already issued base root or prove that root had two approvers."
+}

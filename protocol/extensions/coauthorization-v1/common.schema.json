@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json",
+  "title": "AgentGuard Standalone Coauthorization V1 Common Types",
+  "$defs": {
+    "identifier": {
+      "type": "string", "minLength": 1, "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "businessIdentifier": {
+      "type": "string", "minLength": 1, "maxLength": 128,
+      "pattern": "^[A-Za-z0-9\u3007\u3400-\u4dbf\u4e00-\u9fff][A-Za-z0-9\u3007\u3400-\u4dbf\u4e00-\u9fff._:()\u00b7\uff08\uff09-]*$",
+      "not": { "pattern": "[^A-Za-z0-9\u3007\u3400-\u4dbf\u4e00-\u9fff._:()\u00b7\uff08\uff09-]" }
+    },
+    "safeInteger": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "sm3Hex": {
+      "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"
+    },
+    "quotas": {
+      "type": "object", "additionalProperties": false,
+      "required": ["refund_total_fen", "max_tool_calls"],
+      "properties": {
+        "refund_total_fen": { "$ref": "#/$defs/safeInteger" },
+        "max_tool_calls": { "$ref": "#/$defs/safeInteger" }
+      }
+    },
+    "holder": {
+      "type": "object", "additionalProperties": false,
+      "required": ["agent_id", "key_id"],
+      "properties": {
+        "agent_id": { "$ref": "#/$defs/identifier" },
+        "key_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "requiredSigner": {
+      "type": "object", "additionalProperties": false,
+      "required": ["subject_id", "key_id"],
+      "properties": {
+        "subject_id": { "$ref": "#/$defs/identifier" },
+        "key_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "requiredSigners": {
+      "type": "object", "additionalProperties": false,
+      "required": ["enterprise_approver", "finance_approver"],
+      "properties": {
+        "enterprise_approver": { "$ref": "#/$defs/requiredSigner" },
+        "finance_approver": { "$ref": "#/$defs/requiredSigner" }
+      }
+    },
+    "approvalRole": {
+      "type": "string", "enum": ["ENTERPRISE_APPROVER", "FINANCE_APPROVER"]
+    },
+    "approvalStatement": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "schema_version", "statement_type", "approval_purpose", "approval_payload_hash",
+        "role", "subject_id", "key_id", "approved_at"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "const": "1.0" },
+        "statement_type": { "type": "string", "const": "COAUTHORIZATION_APPROVAL_STATEMENT" },
+        "approval_purpose": { "type": "string", "const": "TASK_COAUTHORIZATION_APPROVAL_V1" },
+        "approval_payload_hash": { "$ref": "#/$defs/sm3Hex" },
+        "role": { "$ref": "#/$defs/approvalRole" },
+        "subject_id": { "$ref": "#/$defs/identifier" },
+        "key_id": { "$ref": "#/$defs/identifier" },
+        "approved_at": { "$ref": "#/$defs/safeInteger" }
+      }
+    },
+    "approvalSignature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "key_id", "key_purpose", "encoding", "value", "signed_at"],
+      "properties": {
+        "algorithm": { "type": "string", "const": "SM2" },
+        "key_id": { "$ref": "#/$defs/identifier" },
+        "key_purpose": { "type": "string", "const": "AUTHORIZATION_ROOT_SIGNING" },
+        "encoding": { "type": "string", "const": "SM2_RS_HEX_128_LOWERCASE" },
+        "value": {
+          "type": "string", "minLength": 128, "maxLength": 128,
+          "pattern": "^[0-9a-f]{128}$"
+        },
+        "signed_at": { "$ref": "#/$defs/safeInteger" }
+      }
+    },
+    "approvalEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["statement", "signature"],
+      "properties": {
+        "statement": { "$ref": "#/$defs/approvalStatement" },
+        "signature": { "$ref": "#/$defs/approvalSignature" }
+      }
+    }
+  }
+}

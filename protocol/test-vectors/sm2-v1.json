@@ -1,0 +1,29 @@
+{
+  "algorithm": "SM2-with-SM3",
+  "schema_version": "1.0",
+  "user_id_utf8": "1234567812345678",
+  "signature_encoding": "SM2_RS_HEX_128_LOWERCASE",
+  "warning": "TEST-ONLY weak private key and fixed nonce; never use in production",
+  "vector": {
+    "domain_separator": "AGENTGUARD|HOLDER_PROOF|V1",
+    "key_id": "test-holder-key",
+    "key_purpose": "AGENT_HOLDER_SIGNING",
+    "private_key_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+    "public_key_hex": "32c4ae2c1f1981195f9904466a39c9948fe30bbff2660be1715a4589334c74c7bc3736a2f4f6779c59bdcee36b692153d0a9877cc62a474002df32e52139f0a0",
+    "fixed_random_hex": "0000000000000000000000000000000000000000000000000000000000000002",
+    "signed_at": 1760000000,
+    "payload": {
+      "schema_version": "1.0",
+      "request_id": "REQ-001",
+      "issued_at": 1760000000
+    },
+    "expected_signature_hex": "178078808cd6e914dd3aba572b6cd480de951f31e3940e3c8fc2dc2d9f9f16e4f43fc3beb9948b759162a2d46a4995bf02b94fd22ffbfe0d0bda85f26a05b5b2",
+    "expected_signed_object_hash": "dbf375e885201914fcb4d8b94ef8c3dcdeee998d9ae9ce16d911a2d6b0676573"
+  },
+  "negative_cases": [
+    "tampered_payload",
+    "wrong_domain_separator",
+    "wrong_key_purpose",
+    "wrong_key_id"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/authorized-workflow-v1/queued-response.schema.json",
+  "title": "ExistingTaskWorkflowQueued",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "task_id", "state", "runtime_mode"],
+  "properties": {
+    "run_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "task_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "state": {"type": "string", "const": "QUEUED"},
+    "runtime_mode": {"type": "string", "enum": ["deterministic", "local", "cloud"]}
+  },
+  "description": "An operational queue acknowledgment, not authorization, admission, tool execution or a signed success receipt. Task and mode must equal the submitted request."
+}

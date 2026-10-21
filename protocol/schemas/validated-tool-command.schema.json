@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/validated-tool-command.schema.json",
+  "title": "ValidatedToolCommand",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "execution_id", "tenant_id", "task_id", "tool_service", "tool_name",
+    "tool_version", "validated_parameters", "business_action_id", "business_idempotency_key",
+    "parameter_hash"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "execution_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "tenant_id": { "$ref": "common.schema.json#/$defs/businessIdentifier" },
+    "task_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "tool_service": { "$ref": "common.schema.json#/$defs/serviceName" },
+    "tool_name": { "$ref": "common.schema.json#/$defs/toolName" },
+    "tool_version": { "$ref": "common.schema.json#/$defs/toolVersion" },
+    "validated_parameters": { "$ref": "common.schema.json#/$defs/canonicalParameters" },
+    "business_action_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" },
+    "business_idempotency_key": { "$ref": "common.schema.json#/$defs/nullableSm3Hex" },
+    "parameter_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" }
+  }
+}

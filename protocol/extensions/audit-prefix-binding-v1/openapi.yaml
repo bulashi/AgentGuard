@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: AgentGuard Audit Prefix Binding V1 Extension
+  version: 1.0.0
+  description: >-
+    Read-only trusted-service observation of at most 100 selected event cores.
+    All retained independent anchors are checked before any positive coverage.
+    The frozen /audit/verify response and signature domains remain unchanged.
+    This response is not signed, and the checkpoint does not independently sign task membership.
+paths:
+  /extensions/audit-prefix-binding/v1/verify-events:
+    post:
+      operationId: verifyAuditPrefixEventsV1
+      summary: Verify selected exact events against a checkpoint used in this invocation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './verify-events-request.schema.json'
+      responses:
+        '200':
+          description: Exact verification snapshot including negative or unanchored observations
+          content:
+            application/json:
+              schema:
+                $ref: './verify-events-response.schema.json'
+        '422':
+          description: Malformed, duplicate, unsupported, or oversized event batch
+        '500':
+          description: Audit data or verifier unavailable; no positive coverage
+  /api/extensions/audit-prefix-binding/v1/tasks/{task_id}/verify-events:
+    post:
+      operationId: observeTaskAuditPrefixV1
+      summary: Restrict selected event identities to the current BFF task projection
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+            pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './verify-events-request.schema.json'
+      responses:
+        '200':
+          description: Strictly validated report bound to this exact requested batch
+          content:
+            application/json:
+              schema:
+                $ref: './verify-events-response.schema.json'
+        '403':
+          description: Requested task or event identity not in the current task projection
+        '404':
+          description: Task not found
+        '422':
+          description: Request violates versioned contract
+        '502':
+          description: Upstream report violates contract or request binding
+        '503':
+          description: Audit service unavailable

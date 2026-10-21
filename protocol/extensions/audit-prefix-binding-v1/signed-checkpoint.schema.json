@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/audit-prefix-binding-v1/signed-checkpoint.schema.json",
+  "title": "Audit Prefix Binding Frozen Signed Checkpoint",
+  "$ref": "https://agentguard.local/schemas/audit-checkpoint.schema.json",
+  "properties": {
+    "signature": {
+      "properties": {
+        "key_purpose": { "const": "AUDIT_CHECKPOINT_SIGNING" }
+      }
+    }
+  }
+}

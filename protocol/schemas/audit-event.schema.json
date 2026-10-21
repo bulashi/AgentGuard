@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/audit-event.schema.json",
+  "title": "AuditEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "event_sequence", "event_id", "execution_id", "event_type",
+    "timestamp", "payload_hash", "evidence_reference", "previous_event_hash", "event_hash"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "event_sequence": { "$ref": "common.schema.json#/$defs/positiveSafeInteger" },
+    "event_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "execution_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "RAW_REQUEST_REJECTED", "AUTHORIZATION_DENIED", "EXECUTION_ADMITTED",
+        "TOOL_DISPATCHED", "EXECUTION_COMMITTED", "EXECUTION_RELEASED",
+        "EXECUTION_UNKNOWN", "RECEIPT_PENDING", "RECEIPT_SIGNED",
+        "RESULT_RETRIEVAL_ALLOWED", "RESULT_RETRIEVAL_DENIED"
+      ]
+    },
+    "timestamp": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "payload_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+    "evidence_reference": { "$ref": "common.schema.json#/$defs/identifier" },
+    "previous_event_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+    "event_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" }
+  }
+}
+

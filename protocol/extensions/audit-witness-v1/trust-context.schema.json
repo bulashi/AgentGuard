@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/audit-witness-v1/trust-context.schema.json",
+  "title": "Caller pinned public audit witness context",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "record_type", "stream_id", "checkpoint_domain", "event_hash_domain", "checkpoint_signer"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "record_type": {"const": "AUDIT_WITNESS_TRUST_CONTEXT_V1"},
+    "stream_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "checkpoint_domain": {"const": "AGENTGUARD|AUDIT_CHECKPOINT|V1"},
+    "event_hash_domain": {"const": "AGENTGUARD|AUDIT_EVENT_HASH|V1"},
+    "checkpoint_signer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["key_id", "key_purpose", "algorithm", "public_key_hex"],
+      "properties": {
+        "key_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+        "key_purpose": {"const": "AUDIT_CHECKPOINT_SIGNING"},
+        "algorithm": {"const": "SM2"},
+        "public_key_hex": {"type": "string", "pattern": "^[0-9a-f]{128}$"}
+      }
+    }
+  }
+}

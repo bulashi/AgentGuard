@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/create-challenge-request.schema.json",
+  "title": "AgentGuard Coauthorization V1 Create Challenge Request",
+  "$comment": "Source contract: backend/coauthorization/contracts.py:CreateChallengeRequest. Strict JSON parsing and strict integer input are API responsibilities, not JSON Schema lexical validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["holder_agent_id", "holder_key_id", "delegation_depth"],
+  "properties": {
+    "holder_agent_id": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier"
+    },
+    "holder_key_id": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier"
+    },
+    "delegation_depth": { "type": "integer", "minimum": 0, "maximum": 16 }
+  }
+}

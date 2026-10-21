@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-evidence-v1/trust-context.schema.json",
+  "title": "AgentGuard Pinned Public Verification Context V1",
+  "$comment": "The exact file bytes must match a separately trusted SHA-256 pin. ACTIVE is a pinned snapshot assertion, not a current registry query. This profile does not accept retired or revoked key records.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "approval_setup", "root_signer", "checkpoint_signer"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "record_type": { "const": "PINNED_PUBLIC_VERIFICATION_CONTEXT_V1" },
+    "approval_setup": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/public-approval-setup.schema.json"
+    },
+    "root_signer": {
+      "allOf": [
+        { "$ref": "#/$defs/runtimeKey" },
+        { "properties": { "key_purpose": { "const": "AUTHORIZATION_ROOT_SIGNING" } } }
+      ]
+    },
+    "checkpoint_signer": {
+      "allOf": [
+        { "$ref": "#/$defs/runtimeKey" },
+        { "properties": {
+          "subject_id": { "const": "audit-checkpoint-signer" },
+          "key_purpose": { "const": "AUDIT_CHECKPOINT_SIGNING" }
+        } }
+      ]
+    }
+  },
+  "$defs": {
+    "runtimeKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_id", "subject_id", "key_purpose", "algorithm", "public_key_hex", "status", "activated_at"],
+      "properties": {
+        "key_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "subject_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+        "key_purpose": { "enum": ["AUTHORIZATION_ROOT_SIGNING", "AUDIT_CHECKPOINT_SIGNING"] },
+        "algorithm": { "const": "SM2" },
+        "public_key_hex": { "type": "string", "pattern": "^[0-9a-f]{128}$", "minLength": 128, "maxLength": 128 },
+        "status": { "const": "ACTIVE" },
+        "activated_at": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp" }
+      }
+    }
+  }
+}

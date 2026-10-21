@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/business-action.schema.json",
+  "title": "BusinessAction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "business_action_id", "action_scope_key", "tenant_id", "task_id",
+    "tool_service", "tool_name", "trusted_action_slot", "created_at", "status"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "business_action_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "action_scope_key": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+    "tenant_id": { "$ref": "common.schema.json#/$defs/businessIdentifier" },
+    "task_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "tool_service": { "$ref": "common.schema.json#/$defs/serviceName" },
+    "tool_name": { "$ref": "common.schema.json#/$defs/toolName" },
+    "trusted_action_slot": { "$ref": "common.schema.json#/$defs/identifier" },
+    "created_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "status": {
+      "type": "string",
+      "enum": ["ACTIVE", "COMMITTED", "RELEASED", "CONFLICT"]
+    }
+  }
+}

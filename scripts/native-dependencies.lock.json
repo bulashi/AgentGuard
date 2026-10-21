@@ -1,0 +1,11 @@
+{
+  "postgresql": {
+    "version": "16.15-1",
+    "url": "https://get.enterprisedb.com/postgresql/postgresql-16.15-1-windows-x64-binaries.zip",
+    "archive": "postgresql-16.15-1-windows-x64-binaries.zip",
+    "sha256": "25e6fcdfb8caec38691bf461125e7564508760666f7b8e5dc6a5f0818f58f81e",
+    "hash_source": "SHA256 of archive downloaded over HTTPS from the PostgreSQL-recommended EDB provider; not a publisher signature",
+    "directory": "postgresql-16.15-1",
+    "executable": "pgsql/bin/pg_ctl.exe"
+  }
+}

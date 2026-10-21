@@ -1,0 +1,66 @@
+.coauth-task-dialog { top: 24px; max-width: calc(100vw - 24px); padding-bottom: 24px; }
+.coauth-task-dialog .ant-modal-content { border-radius: 8px; }
+.coauth-task-dialog .ant-modal-body { max-height: min(72vh, calc(100dvh - 180px)); overflow-y: auto; overflow-x: hidden; }
+.coauth-task-title { display: inline-flex; align-items: center; gap: 9px; font-size: 16px; }
+.coauth-task-body, .coauth-task-body section { min-width: 0; color: var(--ink); }
+.coauth-task-body code { font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; font-size: 14px; overflow-wrap: anywhere; word-break: break-word; }
+.coauth-task-body p, .coauth-task-body span, .coauth-task-body label { overflow-wrap: anywhere; }
+.coauth-task-body h3, .coauth-task-body h4 { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; font-size: 16px; line-height: 1.8; font-weight: 600; }
+.coauth-task-body h4 { margin-top: 15px; font-size: 15px; }
+.coauth-task-body svg { flex-shrink: 0; }
+.coauth-task-body .ant-tag { max-width: 100%; margin: 0; white-space: normal; overflow-wrap: anywhere; line-height: 1.8; }
+.coauth-task-context { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 12px; min-width: 0; margin-bottom: 10px; font-size: 14px; line-height: 1.8; }
+.coauth-task-context > code { flex: 1 1 180px; min-width: 0; }
+.coauth-task-boundary { display: flex; align-items: flex-start; gap: 7px; margin: 0; padding: 8px 0 12px; color: var(--warning); font-size: 14px; line-height: 1.8; }
+.coauth-task-boundary svg, .coauth-task-error svg { margin-top: 3px; }
+.coauth-task-section { border-top: 1px solid var(--line); padding: 16px 0; }
+.coauth-task-section-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+.coauth-task-section-heading h3 { margin: 0; }
+.coauth-task-section-heading > .ant-btn { margin-left: auto; width: 32px; height: 32px; padding: 0; flex: 0 0 32px; }
+.coauth-task-holder { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 110px; gap: 12px; margin-bottom: 12px; }
+.coauth-task-holder > div { min-width: 0; }
+.coauth-task-holder label, .coauth-task-input-label { display: block; margin-bottom: 6px; color: var(--secondary); font-size: 14px; line-height: 1.8; }
+.coauth-task-holder .ant-input-number { width: 100%; }
+.coauth-task-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 12px; margin: 12px 0; min-width: 0; }
+.coauth-task-body .ant-btn { max-width: 100%; }
+.coauth-task-actions .ant-btn { min-height: 32px; height: auto; white-space: normal; }
+.coauth-task-actions .ant-btn > span { overflow-wrap: anywhere; }
+.coauth-task-challenge { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.coauth-task-fields .ant-descriptions-view { min-width: 0; }
+.coauth-task-fields .ant-descriptions-item-container { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: start; gap: 10px; }
+.coauth-task-fields .ant-descriptions-item-label { color: var(--secondary); font-size: 14px; white-space: normal; }
+.coauth-task-fields .ant-descriptions-item-content { display: block; min-width: 0; color: var(--ink); font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.coauth-task-signers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 14px 0; }
+.coauth-task-signers > div { display: flex; flex-direction: column; min-width: 0; gap: 5px; font-size: 14px; line-height: 1.8; }
+.coauth-task-signers strong { display: flex; align-items: flex-start; gap: 7px; color: var(--accent); font-size: 15px; }
+.coauth-task-signers strong svg { margin-top: 3px; }
+.coauth-task-capabilities { margin: 12px 0; padding: 0; list-style: none; }
+.coauth-task-capabilities li { min-width: 0; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.8; }
+.coauth-task-capabilities strong { display: block; margin-bottom: 4px; }
+.coauth-task-details { min-width: 0; margin: 10px 0; }
+.coauth-task-details summary { cursor: pointer; color: var(--accent); font-size: 15px; line-height: 1.9; overflow-wrap: anywhere; }
+.coauth-task-details summary svg { display: inline-block; vertical-align: middle; margin: 0 6px 2px 4px; }
+.coauth-task-details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.coauth-task-details[open] > summary { margin-bottom: 12px; }
+.coauth-task-json { max-width: 100%; margin: 10px 0; padding: 10px 0; border-block: 1px solid var(--line); color: var(--secondary); font-family: "Cascadia Mono", Consolas, monospace; font-size: 14px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.coauth-task-raw.ant-input { font-family: "Cascadia Mono", Consolas, monospace; font-size: 15px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; resize: vertical; }
+.coauth-task-body .ant-checkbox-wrapper { display: inline-flex; align-items: flex-start; max-width: 100%; font-size: 15px; line-height: 1.8; }
+.coauth-task-body .ant-checkbox-wrapper .ant-checkbox { margin-top: 3px; }
+.coauth-task-note { color: var(--secondary); font-size: 14px; line-height: 1.8; margin-bottom: 10px; }
+.coauth-task-error { display: flex; align-items: flex-start; gap: 7px; min-width: 0; margin: 10px 0; color: var(--danger); font-size: 15px; line-height: 1.8; }
+.coauth-task-result { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.coauth-task-result h4 { color: var(--success); margin-top: 0; }
+.coauth-task-history-row { min-width: 0; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.coauth-task-history-heading { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 7px; min-width: 0; }
+.coauth-task-history-heading > code { flex: 1 1 240px; min-width: 0; }
+.coauth-task-pagination { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.coauth-task-pagination .ant-btn { width: 32px; height: 32px; padding: 0; }
+@media (max-width: 540px) {
+  .coauth-task-dialog { top: 12px; max-width: calc(100vw - 16px); padding-bottom: 12px; }
+  .coauth-task-dialog .ant-modal-content { padding: 16px; }
+  .coauth-task-dialog .ant-modal-body { max-height: calc(100dvh - 150px); }
+  .coauth-task-holder { grid-template-columns: minmax(0, 1fr); }
+  .coauth-task-holder .ant-input-number { max-width: 140px; }
+  .coauth-task-signers { grid-template-columns: minmax(0, 1fr); }
+  .coauth-task-fields .ant-descriptions-item-container { grid-template-columns: 88px minmax(0, 1fr); gap: 8px; }
+}

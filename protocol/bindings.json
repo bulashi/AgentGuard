@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "bindings": [
+    ["RawRequest", "RejectedAuditEvent"],
+    ["RequestEnvelope", "RequestContext", "HolderProof"],
+    ["RequestContext", "execution_id", "SignedDenyExecutionReceipt"],
+    ["business_action_id", "business_idempotency_key", "parameter_hash"],
+    ["ValidatedToolCommand", "GatewayExecutionEnvelope"],
+    ["execution_id", "execution_attempt_id"],
+    ["BusinessEffect", "ExecutionReceipt"],
+    ["ExecutionReceiptOrRejectedAuditEvent", "AuditEvent", "AuditCheckpoint"]
+  ]
+}
+

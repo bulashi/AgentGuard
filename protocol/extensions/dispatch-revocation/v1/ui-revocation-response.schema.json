@@ -1,0 +1,217 @@
+{
+  "$defs": {
+    "CancellationEvidenceLink": {
+      "additionalProperties": false,
+      "properties": {
+        "audit_event_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "type": "string"
+          },
+          "title": "Audit Event Ids",
+          "type": "array"
+        },
+        "cancellation_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "title": "Cancellation Id",
+          "type": "string"
+        },
+        "denied_execution_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "title": "Denied Execution Id",
+          "type": "string"
+        },
+        "denied_receipt_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Denied Receipt Id"
+        },
+        "original_execution_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "title": "Original Execution Id",
+          "type": "string"
+        },
+        "reason_code": {
+          "enum": [
+            "ANCESTOR_REVOKED",
+            "KEY_REVOKED"
+          ],
+          "title": "Reason Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cancellation_id",
+        "reason_code",
+        "original_execution_id",
+        "denied_execution_id",
+        "denied_receipt_id",
+        "audit_event_ids"
+      ],
+      "title": "CancellationEvidenceLink",
+      "type": "object"
+    },
+    "RevocationExecutionObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "admitted_count": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Admitted Count",
+          "type": "integer"
+        },
+        "dispatched_or_unknown_count": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Dispatched Or Unknown Count",
+          "type": "integer"
+        },
+        "released_count": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Released Count",
+          "type": "integer"
+        },
+        "scope": {
+          "const": "TASK_SNAPSHOT",
+          "default": "TASK_SNAPSHOT",
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "released_count",
+        "dispatched_or_unknown_count",
+        "admitted_count"
+      ],
+      "title": "RevocationExecutionObservation",
+      "type": "object"
+    }
+  },
+  "$id": "https://agentguard.local/extensions/dispatch-revocation/v1/ui-revocation-response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "already_revoked": {
+      "title": "Already Revoked",
+      "type": "boolean"
+    },
+    "audit_event_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+        "type": "string"
+      },
+      "title": "Audit Event Ids",
+      "type": "array"
+    },
+    "audit_status": {
+      "enum": [
+        "PENDING",
+        "RECORDED"
+      ],
+      "title": "Audit Status",
+      "type": "string"
+    },
+    "boundary": {
+      "const": "DISPATCH_BOUNDARY_NO_ROLLBACK",
+      "default": "DISPATCH_BOUNDARY_NO_ROLLBACK",
+      "title": "Boundary",
+      "type": "string"
+    },
+    "cancellations": {
+      "items": {
+        "$ref": "#/$defs/CancellationEvidenceLink"
+      },
+      "title": "Cancellations",
+      "type": "array"
+    },
+    "credential_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Credential Id",
+      "type": "string"
+    },
+    "descendant_count": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Descendant Count",
+      "type": "integer"
+    },
+    "execution_observation": {
+      "$ref": "#/$defs/RevocationExecutionObservation"
+    },
+    "revocation_reason": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Revocation Reason",
+      "type": "string"
+    },
+    "revoked_at": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Revoked At",
+      "type": "integer"
+    },
+    "revoked_by": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Revoked By",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "const": "REVOKED",
+      "default": "REVOKED",
+      "title": "Status",
+      "type": "string"
+    },
+    "task_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "credential_id",
+    "revoked_by",
+    "revoked_at",
+    "revocation_reason",
+    "descendant_count",
+    "already_revoked",
+    "audit_status",
+    "audit_event_ids",
+    "cancellations",
+    "execution_observation"
+  ],
+  "title": "UiRevocationResponse",
+  "type": "object"
+}

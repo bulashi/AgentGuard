@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/rejected-audit-event.schema.json",
+  "title": "RejectedAuditEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "event_id", "raw_request_hash", "parser_stage", "reason_code",
+    "source_context", "received_at"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "event_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "raw_request_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+    "parser_stage": {
+      "type": "string",
+      "enum": ["UTF8", "JSON", "DUPLICATE_KEY", "SCHEMA"]
+    },
+    "reason_code": {
+      "type": "string",
+      "enum": [
+        "INVALID_UTF8", "MALFORMED_JSON", "DUPLICATE_FIELD", "REQUEST_SCHEMA_INVALID",
+        "UNKNOWN_FIELD"
+      ]
+    },
+    "source_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transport", "source_label"],
+      "properties": {
+        "transport": { "type": "string", "enum": ["HTTP", "INTERNAL_TEST"] },
+        "source_label": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "received_at": { "$ref": "common.schema.json#/$defs/timestamp" }
+  }
+}
+

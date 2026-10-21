@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/gateway-execution-envelope.schema.json",
+  "title": "GatewayExecutionEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload", "signature"],
+  "properties": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "execution_id", "execution_attempt_id", "request_hash", "tenant_id",
+        "task_id", "tool_service", "tool_name", "tool_version", "canonical_validated_parameters",
+        "business_action_id", "business_idempotency_key", "parameter_hash", "issued_at",
+        "expires_at", "gateway_key_id"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+        "execution_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "execution_attempt_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "request_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "tenant_id": { "$ref": "common.schema.json#/$defs/businessIdentifier" },
+        "task_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "tool_service": { "$ref": "common.schema.json#/$defs/serviceName" },
+        "tool_name": { "$ref": "common.schema.json#/$defs/toolName" },
+        "tool_version": { "$ref": "common.schema.json#/$defs/toolVersion" },
+        "canonical_validated_parameters": { "$ref": "common.schema.json#/$defs/canonicalParameters" },
+        "business_action_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" },
+        "business_idempotency_key": { "$ref": "common.schema.json#/$defs/nullableSm3Hex" },
+        "parameter_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "issued_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "expires_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "gateway_key_id": { "$ref": "common.schema.json#/$defs/identifier" }
+      }
+    },
+    "signature": { "$ref": "common.schema.json#/$defs/signature" }
+  }
+}

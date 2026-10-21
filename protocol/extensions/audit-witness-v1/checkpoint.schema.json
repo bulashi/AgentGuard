@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/audit-witness-v1/checkpoint.schema.json",
+  "title": "Existing SM2 signed audit checkpoint",
+  "$ref": "https://agentguard.local/schemas/audit-checkpoint.schema.json",
+  "properties": {"signature": {"properties": {"key_purpose": {"const": "AUDIT_CHECKPOINT_SIGNING"}}}}
+}

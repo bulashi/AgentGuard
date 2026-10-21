@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/coauthorization-response.schema.json",
+  "title": "AgentGuard Coauthorization V1 Authorization Response",
+  "$comment": "Source contract: backend/coauthorization/contracts.py:CoauthorizationResponse. credential references the unchanged frozen ROOT schema. SchemaStore(EXTENSION_SCHEMA_ROOT) alone cannot resolve that external resource; a response validator must register both frozen resources listed below by their existing $id. This annotation does not modify SchemaStore or permit network retrieval. Hash equality and current lifecycle checks require semantic verification outside JSON Schema.",
+  "x-agentguard-external-schema-resources": [
+    {
+      "schema_id": "https://agentguard.local/schemas/capability-credential.schema.json",
+      "relative_uri": "../../schemas/capability-credential.schema.json"
+    },
+    {
+      "schema_id": "https://agentguard.local/schemas/common.schema.json",
+      "relative_uri": "../../schemas/common.schema.json"
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "challenge_id", "approval_payload_hash", "bundle_hash",
+    "root_credential_id", "root_credential_hash", "reused", "credential"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "challenge_id": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier"
+    },
+    "approval_payload_hash": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/sm3Hex",
+      "description": "SM3 of canonicalize(bundle.payload), bound to the challenge and both approval statements."
+    },
+    "bundle_hash": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/sm3Hex",
+      "description": "SM3 of canonicalize(the complete signed bundle), including both approval signatures. Approval array order is preserved by the frozen canonical JSON profile."
+    },
+    "root_credential_id": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/identifier",
+      "description": "Must equal credential.payload.credential_id."
+    },
+    "root_credential_hash": {
+      "$ref": "https://agentguard.local/extensions/coauthorization-v1/common.schema.json#/$defs/sm3Hex",
+      "description": "SM3 of canonicalize(credential), including its signature; must match the persisted signed root hash."
+    },
+    "reused": {
+      "type": "boolean",
+      "description": "False for new issuance. True only when the identical canonical signed bundle returns the original root after current task, policy, key, root and challenge lifecycle checks; the challenge must still be unexpired."
+    },
+    "credential": {
+      "$ref": "https://agentguard.local/schemas/capability-credential.schema.json",
+      "description": "The existing frozen ROOT credential, not a new extension credential format."
+    }
+  }
+}

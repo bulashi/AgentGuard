@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/execution-receipt.schema.json",
+  "title": "ExecutionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload", "signature"],
+  "properties": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "receipt_id", "receipt_type", "execution_id", "request_id",
+        "request_hash", "credential_chain_hash", "tenant_id", "task_id", "tool_service",
+        "tool_name", "tool_version", "parameter_hash", "decision", "reason_code",
+        "business_action_id", "business_idempotency_key", "business_effect_id",
+        "business_result_hash", "budget_reserved", "budget_committed", "started_at",
+        "finished_at", "decision_at", "business_effect_finalized_at", "receipt_issued_at",
+        "receipt_signing_key_id"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+        "receipt_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "receipt_type": {
+          "type": "string",
+          "enum": ["EXECUTION_RESULT", "AUTHORIZATION_DENIAL"]
+        },
+        "execution_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "request_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "request_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "credential_chain_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "tenant_id": { "$ref": "common.schema.json#/$defs/businessIdentifier" },
+        "task_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "tool_service": { "$ref": "common.schema.json#/$defs/serviceName" },
+        "tool_name": { "$ref": "common.schema.json#/$defs/toolName" },
+        "tool_version": { "$ref": "common.schema.json#/$defs/toolVersion" },
+        "parameter_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "decision": { "type": "string", "enum": ["ALLOW", "DENY"] },
+        "reason_code": { "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "business_action_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" },
+        "business_idempotency_key": { "$ref": "common.schema.json#/$defs/nullableSm3Hex" },
+        "business_effect_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" },
+        "business_result_hash": { "$ref": "common.schema.json#/$defs/nullableSm3Hex" },
+        "budget_reserved": { "$ref": "common.schema.json#/$defs/nonNegativeSafeInteger" },
+        "budget_committed": { "$ref": "common.schema.json#/$defs/nonNegativeSafeInteger" },
+        "started_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "finished_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "decision_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "business_effect_finalized_at": {
+          "oneOf": [
+            { "$ref": "common.schema.json#/$defs/timestamp" },
+            { "type": "null" }
+          ]
+        },
+        "receipt_issued_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "receipt_signing_key_id": { "$ref": "common.schema.json#/$defs/identifier" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "decision": { "const": "DENY" } }, "required": ["decision"] },
+          "then": {
+            "properties": {
+              "receipt_type": { "const": "AUTHORIZATION_DENIAL" },
+              "business_effect_id": { "type": "null" },
+              "business_result_hash": { "type": "null" },
+              "budget_reserved": { "const": 0 },
+              "budget_committed": { "const": 0 },
+              "business_effect_finalized_at": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "decision": { "const": "ALLOW" } }, "required": ["decision"] },
+          "then": {
+            "properties": {
+              "receipt_type": { "const": "EXECUTION_RESULT" },
+              "reason_code": { "const": "ALLOWED" }
+            }
+          }
+        }
+      ]
+    },
+    "signature": { "$ref": "common.schema.json#/$defs/signature" }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/audit-event-v3.schema.json",
+  "title": "AgentGuard Coauthorization Revocation Audit Event V3",
+  "$comment": "Additive audit core; original V1/V2 schemas and the audit hash domain are unchanged.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "event_sequence", "event_id", "execution_id", "event_type", "timestamp", "payload_hash", "evidence_reference", "previous_event_hash", "event_hash"],
+  "properties": {
+    "schema_version": { "const": "3.0" },
+    "event_sequence": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger" },
+    "event_id": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+    "execution_id": { "type": "null" },
+    "event_type": { "const": "COAUTH_REVOCATION_APPLIED" },
+    "timestamp": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp" },
+    "payload_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+    "evidence_reference": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier" },
+    "previous_event_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" },
+    "event_hash": { "$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex" }
+  }
+}

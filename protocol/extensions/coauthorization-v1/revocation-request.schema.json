@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/revocation-request.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tenant_id", "source_kind", "source_identifier"],
+  "properties": {
+    "tenant_id": {"$ref": "common.schema.json#/$defs/businessIdentifier"},
+    "source_identifier": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "source_kind": {"enum": ["APPROVAL_KEY_REVOKED", "APPROVAL_KEY_COMPROMISED", "APPROVAL_POLICY_REVOKED", "AUTHORIZATION_WITHDRAWN"]}
+  }
+}

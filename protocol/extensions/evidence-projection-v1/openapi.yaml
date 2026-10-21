@@ -1,0 +1,53 @@
+openapi: 3.1.0
+info:
+  title: AgentGuard BFF Signed Source Projection Supplement
+  version: 1.0.0
+  description: Additive read projection contract only; the frozen signed schemas and base OpenAPI are unchanged.
+paths:
+  /api/tasks/{task_id}:
+    get:
+      operationId: readTaskSignedSourceObservations
+      description: The existing task snapshot includes source_verification in each credential and receipt. Other snapshot fields are outside this supplement.
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+      responses:
+        '200':
+          description: Read-only task snapshot; cryptographic validity and source binding are separate observations.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [credentials, receipts]
+                properties:
+                  credentials:
+                    type: array
+                    items:
+                      type: object
+                      required: [source_verification]
+                      properties:
+                        source_verification:
+                          allOf:
+                            - $ref: './source-verification.schema.json'
+                            - properties:
+                                profile:
+                                  const: CREDENTIAL_ROW_BINDING_V1
+                  receipts:
+                    type: array
+                    items:
+                      type: object
+                      required: [source_verification]
+                      properties:
+                        source_verification:
+                          allOf:
+                            - $ref: './source-verification.schema.json'
+                            - properties:
+                                profile:
+                                  const: RECEIPT_EXECUTION_BINDING_V1
+        '404':
+          description: Task not found; no empty snapshot substitutes for a missing task.

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "rules": [
+    {"field": "tenant_id", "relation": "EQUAL"},
+    {"field": "task_id", "relation": "EQUAL"},
+    {"field": "verifier_audience", "relation": "EQUAL_PROTOCOL_AUDIENCE"},
+    {"field": "capabilities.service", "relation": "CHILD_SUBSET_OF_PARENT"},
+    {"field": "capabilities.tool", "relation": "CHILD_SUBSET_OF_PARENT"},
+    {"field": "capabilities.version", "relation": "EQUAL"},
+    {"field": "capabilities.resources.*", "relation": "CHILD_SET_SUBSET_OF_PARENT"},
+    {"field": "capabilities.constraints.template_ids", "relation": "CHILD_SET_SUBSET_OF_PARENT"},
+    {"field": "capabilities.constraints.single_max_fen", "relation": "CHILD_LESS_THAN_OR_EQUAL"},
+    {"field": "quotas.refund_total_fen", "relation": "CHILD_LESS_THAN_OR_EQUAL"},
+    {"field": "quotas.max_tool_calls", "relation": "CHILD_LESS_THAN_OR_EQUAL"},
+    {"field": "not_before", "relation": "CHILD_GREATER_THAN_OR_EQUAL"},
+    {"field": "expires_at", "relation": "CHILD_LESS_THAN_OR_EQUAL"},
+    {"field": "delegation_depth", "relation": "CHILD_EQUALS_PARENT_MINUS_ONE"}
+  ],
+  "failure_reason_code": "DELEGATION_ESCALATION"
+}
+

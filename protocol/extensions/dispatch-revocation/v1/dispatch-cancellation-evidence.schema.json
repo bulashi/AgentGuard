@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/dispatch-revocation/v1/dispatch-cancellation-evidence.schema.json",
+  "title": "DispatchCancellationEvidenceV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "cancellation_id", "execution_id", "denial_execution_id", "task_id", "request_id", "request_hash", "credential_chain_hash", "admission_decision", "dispatch_decision", "reason_code", "cancelled_at", "released_budgets", "revocations"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "record_type": {"const": "DISPATCH_CANCELLED_V1"},
+    "cancellation_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "execution_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "denial_execution_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "task_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "request_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "request_hash": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex"},
+    "credential_chain_hash": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex"},
+    "admission_decision": {"const": "ALLOW"},
+    "dispatch_decision": {"const": "DENY"},
+    "reason_code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$", "maxLength": 128},
+    "cancelled_at": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp"},
+    "released_budgets": {
+      "type": "array", "minItems": 1, "maxItems": 34,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["credential_id", "quota_type", "amount"],
+        "properties": {
+          "credential_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+          "quota_type": {"enum": ["refund_total_fen", "max_tool_calls"]},
+          "amount": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/nonNegativeSafeInteger"}
+        }
+      }
+    },
+    "revocations": {
+      "type": "array", "maxItems": 17,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["credential_id", "revoked_at", "reason", "revoked_by"],
+        "properties": {
+          "credential_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+          "revoked_at": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/timestamp"},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 256},
+          "revoked_by": {"type": "string", "minLength": 1, "maxLength": 128}
+        }
+      }
+    }
+  }
+}

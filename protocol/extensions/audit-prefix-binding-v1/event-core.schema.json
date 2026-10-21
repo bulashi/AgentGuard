@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/audit-prefix-binding-v1/event-core.schema.json",
+  "title": "Audit Prefix Binding Versioned Event Core",
+  "oneOf": [
+    { "$ref": "https://agentguard.local/schemas/audit-event.schema.json" },
+    { "$ref": "https://agentguard.local/extensions/coauthorization-v1/audit-event-v2.schema.json" },
+    { "$ref": "https://agentguard.local/extensions/coauthorization-v1/audit-event-v3.schema.json" },
+    { "$ref": "https://agentguard.local/extensions/dispatch-revocation/v1/audit-event-v4.schema.json" }
+  ]
+}

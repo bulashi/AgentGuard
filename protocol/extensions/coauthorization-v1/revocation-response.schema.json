@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/revocation-response.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "revocation_event_id", "tenant_id", "source_kind", "source_identifier", "observed_at", "observation_context", "database_actor", "matched_root_count", "created_root_revocation_count", "status"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "revocation_event_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "tenant_id": {"$ref": "common.schema.json#/$defs/businessIdentifier"},
+    "source_identifier": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "source_kind": {"enum": ["APPROVAL_KEY_REVOKED", "APPROVAL_KEY_COMPROMISED", "APPROVAL_POLICY_REVOKED", "AUTHORIZATION_WITHDRAWN"]},
+    "observed_at": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "observation_context": {"enum": ["REGISTRY_STATUS_UPDATE", "MIGRATION_RECONCILIATION", "EXPLICIT_WITHDRAWAL"]},
+    "database_actor": {"type": "string", "minLength": 1, "maxLength": 128},
+    "matched_root_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "created_root_revocation_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "status": {"const": "RECORDED"}
+  }
+}

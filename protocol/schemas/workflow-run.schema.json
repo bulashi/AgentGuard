@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/workflow-run.schema.json",
+  "title": "OperationalWorkflowRunProjection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "runtime_mode", "scenario", "model", "state", "reason_code", "created_at_ms", "updated_at_ms", "deadline_at_ms", "finished_at_ms", "observation_kind", "events"],
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "runtime_mode": {"type": "string", "enum": ["deterministic", "local", "cloud"]},
+    "scenario": {"type": "string", "enum": ["normal", "policy_injection"]},
+    "model": {"type": ["string", "null"]},
+    "state": {"type": "string", "enum": ["QUEUED", "RUNNING", "COMPLETED", "DENIED", "FAILED", "INTERRUPTED"]},
+    "reason_code": {"type": ["string", "null"]},
+    "created_at_ms": {"type": "integer", "minimum": 0},
+    "updated_at_ms": {"type": "integer", "minimum": 0},
+    "deadline_at_ms": {"type": "integer", "minimum": 0},
+    "finished_at_ms": {"type": ["integer", "null"], "minimum": 0},
+    "observation_kind": {"const": "operational_not_signed_audit"},
+    "events": {
+      "type": "array", "maxItems": 128,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["sequence", "agent_id", "action", "status", "timestamp_ms", "recorded_at_ms", "details"],
+        "properties": {
+          "sequence": {"type": "integer", "minimum": 1, "maximum": 128},
+          "agent_id": {"type": "string", "enum": ["agent-coordinator", "agent-knowledge", "agent-case", "agent-refund"]},
+          "action": {"type": "string", "minLength": 1, "maxLength": 64},
+          "status": {"type": "string", "enum": ["RUNNING", "COMPLETED", "DENIED", "FAILED"]},
+          "timestamp_ms": {"type": "integer", "minimum": 0},
+          "recorded_at_ms": {"type": "integer", "minimum": 0},
+          "details": {"type": "object"}
+        }
+      }
+    }
+  }
+}

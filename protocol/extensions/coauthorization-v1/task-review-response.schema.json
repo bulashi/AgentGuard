@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/task-review-response.schema.json",
+  "title": "AgentGuard Coauthorization V1 Task History Response",
+  "$comment": "Read-only consistent PostgreSQL snapshot, not current authorization verification. window_state is only an observation at observed_at. History remains readable when the extension is disabled, provided migration 0015 is installed; missing storage must not become empty history. Offset pagination can shift after concurrent insertion; no repeatable cursor guarantee across pages.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "observation_kind", "task_id", "task_status", "observed_at", "offset", "limit", "has_more", "items", "signature_domain"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "observation_kind": {"const": "STORED_EVIDENCE_NOT_REVALIDATED"},
+    "task_id": {"$ref": "./common.schema.json#/$defs/identifier"},
+    "task_status": {"enum": ["PENDING_AUTHORIZATION", "AUTHORIZED", "CLOSED"]},
+    "observed_at": {"$ref": "./common.schema.json#/$defs/safeInteger"},
+    "offset": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "limit": {"const": 20},
+    "has_more": {"type": "boolean"},
+    "items": {"type": "array", "maxItems": 20, "items": {"$ref": "./history-entry.schema.json"}},
+    "signature_domain": {"const": "AGENTGUARD|TASK_COAUTHORIZATION_APPROVAL|V1"}
+  }
+}

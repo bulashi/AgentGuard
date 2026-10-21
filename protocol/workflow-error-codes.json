@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "scope": "operational_workflow_only_not_security_reason_enum",
+  "error_codes": [
+    "MODEL_MODE_UNAVAILABLE", "MODEL_CONFIGURATION_INVALID", "MODEL_INPUT_TOO_LARGE",
+    "LLM_UPSTREAM_UNAVAILABLE", "LLM_OUTPUT_INVALID", "PLANNER_DECLINED",
+    "CLOUD_CONFIRMATION_REQUIRED", "WORKFLOW_ALREADY_EXISTS", "WORKFLOW_RUNTIME_FAILED", "BUSINESS_RESULT_MISMATCH",
+    "OBSERVATION_STORE_UNAVAILABLE", "OBSERVATION_REJECTED"
+  ],
+  "propagation": "Existing Gateway security reasons are propagated unchanged and remain defined in error-codes.json."
+}

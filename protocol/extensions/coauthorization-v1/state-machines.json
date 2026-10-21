@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "extension": "coauthorization-v1",
+  "implementation_status": "SOURCE_WRITTEN_NOT_EXECUTED",
+  "configuration": {
+    "required_setting": "AGENTGUARD_COAUTHORIZATION_REQUIRED",
+    "default": false,
+    "legacy_root_endpoint_when_enabled": "REJECT_COAUTH_REQUIRED",
+    "private_signers": "EXTERNAL_APPROVERS_ONLY"
+  },
+  "challenge": {
+    "states": ["PENDING", "CONSUMED", "REVOKED"],
+    "initial": "PENDING",
+    "terminal": ["CONSUMED", "REVOKED"],
+    "transitions": [
+      {
+        "from": "PENDING",
+        "to": "CONSUMED",
+        "guard": "BOTH_CURRENT_INDEPENDENT_APPROVALS_AND_EXACT_TASK_POLICY_BINDING",
+        "transaction_writes": ["ROOT_CREDENTIAL", "TWO_ROOT_BUDGET_ROWS", "TASK_AUTHORIZED", "SIGNED_BUNDLE_AND_ROOT_HASH", "DUAL_SUBJECT_ROOT_ASSOCIATION", "COAUTHORIZATION_AUDIT_OUTBOX"],
+        "compare_and_swap": "WHERE challenge_id = supplied_id AND status = 'PENDING'",
+        "on_failure": "ROLLBACK_ALL"
+      },
+      {
+        "from": "PENDING",
+        "to": "REVOKED",
+        "guard": "EXPIRED_OR_CURRENT_ACTIVE_POLICY_REVISION_CHANGED",
+        "operation": "CREATE_REPLACEMENT_CHALLENGE_TRANSACTION"
+      }
+    ],
+    "immutable": ["challenge_id", "tenant_id", "task_id", "policy_revision", "approval_payload", "approval_payload_hash", "issued_at", "expires_at"],
+    "maximum_pending_per_task": 1,
+    "random_source": "secrets.token_hex(32)",
+    "ttl_seconds": {"default": 300, "minimum": 1, "maximum": 3600},
+    "validity_interval": "[issued_at, expires_at)",
+    "replay_after_consumption": {
+      "operation": "RETURN_ORIGINAL_ROOT_ONLY",
+      "guard": "AUTHORIZED_TASK_AND_EXACT_CANONICAL_SIGNED_BUNDLE_HASH_AND_CURRENT_FULL_REVERIFICATION",
+      "verifier_mode": "SERVER_DERIVED_ALLOW_EXISTING_AUTHORIZATION",
+      "required_next_step": "RETURN_EXISTING_AUTHORIZATION",
+      "challenge_must_remain_unexpired": true,
+      "root_lock": "FOR SHARE NOWAIT",
+      "busy_root": "COAUTH_CHALLENGE_CONFLICT",
+      "new_root_or_budget_writes": false
+    }
+  },
+  "approval_key": {
+    "states": ["ACTIVE", "RETIRED", "REVOKED", "COMPROMISED"],
+    "initial": "ACTIVE",
+    "transitions": [
+      {"from": "ACTIVE", "to": "RETIRED"},
+      {"from": "ACTIVE", "to": "REVOKED"},
+      {"from": "ACTIVE", "to": "COMPROMISED"},
+      {"from": "RETIRED", "to": "REVOKED"},
+      {"from": "RETIRED", "to": "COMPROMISED"},
+      {"from": "REVOKED", "to": "COMPROMISED"}
+    ],
+    "immutable_identity": ["key_id", "tenant_id", "subject_id", "principal_id", "role", "approval_purpose", "signing_purpose", "algorithm", "public_key_hex", "activated_at", "expires_at"],
+    "non_null_lifecycle_timestamps_cannot_change": true,
+    "required_for_new_or_existing_authorization": "ACTIVE_WITH_NO_RETIRE_REVOKE_COMPROMISE_TIMESTAMP_AND_VALID_WINDOW",
+    "automatically_revokes_existing_roots": false
+  },
+  "approval_policy": {
+    "states": ["ACTIVE", "RETIRED", "REVOKED"],
+    "initial": "ACTIVE",
+    "transitions": [
+      {"from": "ACTIVE", "to": "RETIRED"},
+      {"from": "ACTIVE", "to": "REVOKED"},
+      {"from": "RETIRED", "to": "REVOKED"}
+    ],
+    "maximum_active_per_tenant": 1,
+    "revision_and_signer_binding_immutable": true,
+    "new_revision_requires_explicit_retirement_of_existing_policy": true,
+    "automatically_revokes_existing_roots": false
+  },
+  "web_external_bundle_bridge": {
+    "status": "SOURCE_WRITTEN_NOT_EXECUTED",
+    "operations": ["READ_TASK_HISTORY", "CREATE_CHALLENGE_ON_EXPLICIT_ACTION", "EXPORT_UNSIGNED_TASK_SCOPE", "SUBMIT_EXTERNAL_RAW_SIGNED_BUNDLE", "DISPLAY_AUTHORITY_ROOT_RESPONSE"],
+    "history_is_current_verification": false,
+    "signs_in_browser": false,
+    "single_party_approval_is_persisted": false,
+    "unknown_result_action": "REFRESH_HISTORY_NO_AUTOMATIC_RETRY"
+  },
+  "offline_approver": {
+    "status": "SOURCE_WRITTEN_NOT_EXECUTED",
+    "operations": ["REVIEW_PINNED_TASK_SCOPE", "SIGN_ONE_ROLE_ON_EXPLICIT_CONFIRMATION", "VERIFY_AND_ASSEMBLE_TWO_ROLE_BUNDLE"],
+    "trusted_public_policy_pin": "OPERATOR_SUPPLIED_OUT_OF_BAND_SHA256_OF_EXACT_PUBLIC_SETUP_BYTES",
+    "expected_task_binding": ["OPERATOR_SUPPLIED_TASK_ID", "OPERATOR_SUPPLIED_APPROVAL_PAYLOAD_SM3"],
+    "challenge_origin_is_cryptographically_authenticated": false,
+    "snapshot_is_live_authority_state": false,
+    "approval_signature_domain": "AGENTGUARD|TASK_COAUTHORIZATION_APPROVAL|V1",
+    "single_role_interchange_schema": "single-approval.schema.json",
+    "private_key_adapter": "OPERATOR_OWNED_LOCAL_SOFT_FILE_NOT_HSM_OR_ENTERPRISE_LOGIN",
+    "generates_or_registers_private_keys": false,
+    "reads_private_key_during_review_or_assembly": false,
+    "outputs": "PUBLIC_APPROVAL_EVIDENCE_OR_EXISTING_COAUTHORIZATION_BUNDLE",
+    "writes_root_or_budget_or_challenge": false,
+    "network_or_database_access": false,
+    "required_next_step": "AUTHORITY_CURRENT_TRUSTED_STATE_REVERIFICATION_AND_ATOMIC_ROOT_ISSUANCE"
+  },
+  "authorization_audit": {
+    "status": "SOURCE_WRITTEN_NOT_EXECUTED",
+    "event_schema_version": "2.0",
+    "event_type": "COAUTH_ROOT_AUTHORIZED",
+    "execution_id": null,
+    "payload_schema_version": "1.0",
+    "payload_record_type": "COAUTH_ROOT_AUTHORIZED_V1",
+    "maximum_payload_bytes": 65536,
+    "payload_contains": ["FULL_SIGNED_APPROVAL_BUNDLE", "ACTUAL_SIGNED_ROOT", "TASK_CHALLENGE_POLICY_BINDINGS", "SM3_HASHES", "AUTHORIZED_AT"],
+    "transaction": "SAME_CONNECTION_AND_TRANSACTION_AS_NEW_ROOT_AND_CHALLENGE_CONSUMPTION",
+    "replay_writes_new_event": false,
+    "legacy_roots_are_backfilled": false,
+    "chain": "VERSIONED_EVENT_WITH_ORIGINAL_AUDIT_EVENT_HASH_DOMAIN_AND_PREVIOUS_SM3",
+    "independent_anchor": "EXISTING_SIGNED_CHECKPOINT_AFTER_ACTUAL_APPEND_AND_COVERAGE",
+    "source_binding_check_is_signature_or_current_trust_verification": false,
+    "actual_append_checkpoint_or_browser_verified": false,
+    "required_migration": "0016_coauthorization_audit_v2.sql"
+  },
+  "not_implemented": ["ENTERPRISE_HTTP_AUTHENTICATION", "INDEPENDENT_PRIVATE_KEY_CUSTODY", "SEPARATE_SUBJECT_WEB_SIGNING_AND_PARTIAL_APPROVAL_STORAGE", "PRODUCTION_INDEPENDENT_APPROVAL_ANCHOR_DEPLOYMENT_AND_TRUSTED_HISTORY_VERIFIER", "AUTOMATIC_APPROVAL_REVOCATION_TO_ROOT_CASCADE"]
+}

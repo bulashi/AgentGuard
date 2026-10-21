@@ -1,0 +1,34 @@
+.coauth-dialog-title { display: inline-flex; align-items: center; gap: 9px; }
+.coauth-entry-actions { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.section-actions .coauth-entry-actions > .ant-btn { flex: 0 0 auto; }
+.coauth-status-dialog { max-width: calc(100vw - 32px); }
+.coauth-status-dialog .ant-modal-content { border-radius: 8px; }
+.coauth-config-heading { display: flex; align-items: center; gap: 9px; padding: 7px 0 15px; border-bottom: 1px solid var(--line); }
+.coauth-config-heading > span:first-child { color: var(--secondary); font-size: 15px; }
+.coauth-config-heading .ant-tag { margin: 0; }
+.coauth-config-heading .ant-btn { margin-left: auto; width: 32px; height: 32px; padding: 0; }
+.coauth-role-map { padding: 24px 0 19px; color: var(--ink); }
+.coauth-role-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.coauth-role-pair > div { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 8px; }
+.coauth-role-pair svg { color: var(--accent); }
+.coauth-role-map strong { font-size: 16px; font-weight: 600; line-height: 1.6; overflow-wrap: anywhere; text-align: center; }
+.coauth-role-map span { font-size: 14px; line-height: 1.7; color: var(--secondary); overflow-wrap: anywhere; text-align: center; }
+.coauth-map-junction { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 16px 0 13px; }
+.coauth-map-junction svg { color: var(--muted); }
+.coauth-authority { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 13px 0; border-block: 1px solid var(--line); }
+.coauth-authority svg { color: var(--accent); }
+.coauth-config-details .ant-descriptions-item-label { color: var(--secondary); font-size: 14px; width: 130px; }
+.coauth-config-details .ant-descriptions-item-content { color: var(--secondary); font-size: 15px; overflow-wrap: anywhere; }
+.coauth-read-error, .coauth-config-boundary { display: flex; align-items: flex-start; gap: 7px; min-width: 0; font-size: 14px; line-height: 1.8; }
+.coauth-read-error { padding: 12px 0 0; color: var(--danger); }
+.coauth-config-boundary { margin-top: 9px; padding: 12px 0 0; border-top: 1px solid var(--line); color: var(--warning); }
+.coauth-read-error svg, .coauth-config-boundary svg { flex-shrink: 0; margin-top: 2px; }
+@media (max-width: 480px) {
+  .coauth-role-pair { gap: 12px; }
+  .coauth-config-details .ant-descriptions-item-label { width: 105px; }
+  .coauth-config-heading { flex-wrap: wrap; }
+}
+
+.advanced-authorization { margin: 0 0 16px; }
+.advanced-authorization > summary { cursor: pointer; color: var(--secondary); padding: 6px 0; }
+.advanced-authorization .coauth-entry-actions { margin-top: 8px; }

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "extension": "coauthorization-evidence-v1",
+  "implementation_status": "SOURCE_WRITTEN_NOT_EXECUTED",
+  "machine_kind": "LOCAL_OPERATION_NOT_PERSISTENT_SECURITY_STATE",
+  "states": ["INPUT_PENDING", "PINNED_INPUT_PARSED", "PREFIX_VERIFIED", "EXPORTED_NEW_FILE", "REFUSED"],
+  "transitions": [
+    {"from": "INPUT_PENDING", "to": "PINNED_INPUT_PARSED", "requires": "EXTERNALLY_CHECKED_EXACT_BYTE_PINS_AND_STRICT_BOUNDED_JSON"},
+    {"from": "PINNED_INPUT_PARSED", "to": "PREFIX_VERIFIED", "requires": "TWO_APPROVALS_ROOT_CHECKPOINT_AND_FULL_SELECTED_PREFIX_MATCH_EXPECTED_TASK"},
+    {"from": "PREFIX_VERIFIED", "to": "EXPORTED_NEW_FILE", "requires": "EXPLICIT_EXPORT_READ_ONLY_DATABASE_SNAPSHOT_AND_EXCLUSIVE_NEW_FILE_WRITE"},
+    {"from": "INPUT_PENDING", "to": "REFUSED", "requires": "ANY_INPUT_OR_READ_FAILURE"},
+    {"from": "PINNED_INPUT_PARSED", "to": "REFUSED", "requires": "ANY_CRYPTO_BINDING_OR_PREFIX_FAILURE"},
+    {"from": "PREFIX_VERIFIED", "to": "REFUSED", "requires": "OUTPUT_FAILURE_OR_INTERRUPTION_POSSIBLE_NEW_PARTIAL_FILE"}
+  ],
+  "no_transitions": ["ISSUE_ROOT", "CONSUME_CHALLENGE", "INITIALIZE_BUDGET", "CREATE_CHECKPOINT", "EXECUTE_TOOL", "PROVE_CURRENT_REVOCATION", "COMPETITION_PHASE_PASS"],
+  "verify_operation_terminal": "PREFIX_VERIFIED",
+  "export_operation_terminal": "EXPORTED_NEW_FILE",
+  "no_automatic_retry_or_output_overwrite": true
+}

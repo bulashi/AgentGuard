@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "extension": "coauthorization-v1",
+  "implementation_status": "SOURCE_WRITTEN_NOT_EXECUTED",
+  "response_fields": ["reason_code", "message"],
+  "source": "backend.coauthorization.verifier.CoauthorizationReason",
+  "message_is_not_a_stable_contract": true,
+  "do_not_echo": ["SUBMITTED_BUNDLE", "SIGNATURES", "PRIVATE_KEYS", "API_KEYS", "DATABASE_URL", "PARSER_INTERNALS"],
+  "codes": [
+    {"code": "COAUTH_DISABLED", "http_status": 404},
+    {"code": "COAUTH_REQUIRED", "http_status": 403},
+    {"code": "COAUTH_POLICY_NOT_CONFIGURED", "http_status": 403},
+    {"code": "COAUTH_POLICY_NOT_ACTIVE", "http_status": 403, "scope": "ADMINISTRATIVE_REGISTRATION"},
+    {"code": "COAUTH_CHALLENGE_CONFLICT", "http_status": 409},
+    {"code": "COAUTH_IDEMPOTENCY_CONFLICT", "http_status": 409},
+    {"code": "COAUTH_ROOT_REVOKED_OR_INVALID", "http_status": 403},
+    {"code": "COAUTH_INVALID_BUNDLE", "http_status": 400},
+    {"code": "COAUTH_INVALID_TRUSTED_CONTEXT", "http_status": 403},
+    {"code": "COAUTH_TASK_NOT_AUTHORIZABLE", "http_status": 409},
+    {"code": "COAUTH_TASK_EXPIRED_OR_NOT_YET_VALID", "http_status": 403},
+    {"code": "COAUTH_POLICY_EXPIRED_OR_NOT_YET_VALID", "http_status": 403},
+    {"code": "COAUTH_CHALLENGE_NOT_PENDING", "http_status": 403},
+    {"code": "COAUTH_CHALLENGE_EXPIRED_OR_NOT_YET_VALID", "http_status": 403},
+    {"code": "COAUTH_TASK_OR_POLICY_MISMATCH", "http_status": 403},
+    {"code": "COAUTH_CHALLENGE_MISMATCH", "http_status": 403},
+    {"code": "COAUTH_SIGNER_MISMATCH", "http_status": 403},
+    {"code": "COAUTH_SAME_PRINCIPAL", "http_status": 403},
+    {"code": "COAUTH_SAME_KEY", "http_status": 403},
+    {"code": "COAUTH_REGISTRY_UNAVAILABLE", "http_status": 503},
+    {"code": "COAUTH_STORED_EVIDENCE_INVALID", "http_status": 503, "scope": "READ_ONLY_HISTORY"},
+    {"code": "COAUTH_UNTRUSTED_KEY", "http_status": 403},
+    {"code": "COAUTH_KEY_NOT_ACTIVE", "http_status": 403},
+    {"code": "COAUTH_KEY_EXPIRED_OR_NOT_YET_VALID", "http_status": 403},
+    {"code": "COAUTH_APPROVAL_TIME_INVALID", "http_status": 403},
+    {"code": "COAUTH_INVALID_SIGNATURE", "http_status": 403}
+  ],
+  "bff_only": [
+    {"code": "COAUTH_RESULT_UNCONFIRMED", "http_status": [502, 503], "meaning": "AUTHORIZATION_MAY_HAVE_COMMITTED_REFRESH_HISTORY_NO_AUTOMATIC_RETRY"},
+    {"code": "CONTROLLED_RESULT_INVALID", "http_status": 502, "meaning": "READ_OR_CHALLENGE_RESPONSE_REJECTED"}
+  ],
+  "inherited_request_rejection": {"code": "REQUEST_SCHEMA_INVALID", "http_status": 400},
+  "inherited_root_key_rejections": {
+    "source": "backend.common.error_codes.ReasonCode",
+    "http_status": 403,
+    "frozen_enum_modified": false
+  }
+}

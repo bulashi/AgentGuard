@@ -1,0 +1,73 @@
+{
+  "schema": "agentguard-license-supplements-v1",
+  "verified_at_utc": "2026-10-17T04:52:30.528540+00:00",
+  "scope": "Upstream license originals and version correspondence only; no dependency or assessed source changes.",
+  "components": [
+    {
+      "name": "gmssl",
+      "version": "3.2.2",
+      "distribution_metadata_license": "BSD",
+      "upstream_license_heading": "MIT License",
+      "upstream_commit": "454cf11df5d8ac9d7d74435e89e8a58aa8dcbb85",
+      "license_url": "https://raw.githubusercontent.com/py-gmssl/py-gmssl/454cf11df5d8ac9d7d74435e89e8a58aa8dcbb85/License",
+      "license_sha256": "09cccf2e999537be2e9d65307220280182ef3915bdb94b109f32af1b8391d329",
+      "source_comparison": [
+        {
+          "file": "__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "identical": true,
+          "upstream_url": "https://raw.githubusercontent.com/py-gmssl/py-gmssl/454cf11df5d8ac9d7d74435e89e8a58aa8dcbb85/gmssl/__init__.py"
+        },
+        {
+          "file": "func.py",
+          "sha256": "711dbcee8e5f062f429cfd1e003f65efeec8b8f91bec33aa56f98c8a9d99938d",
+          "identical": true,
+          "upstream_url": "https://raw.githubusercontent.com/py-gmssl/py-gmssl/454cf11df5d8ac9d7d74435e89e8a58aa8dcbb85/gmssl/func.py"
+        },
+        {
+          "file": "sm2.py",
+          "sha256": "5d488cf4c418dce64c5c1f701b072c800e12a5418bfcbdbc646996387789ac75",
+          "identical": true,
+          "upstream_url": "https://raw.githubusercontent.com/py-gmssl/py-gmssl/454cf11df5d8ac9d7d74435e89e8a58aa8dcbb85/gmssl/sm2.py"
+        },
+        {
+          "file": "sm3.py",
+          "sha256": "b2550f1c99dcc7668f07e81c61743e97a3a31b295aa0a233789332472926599b",
+          "identical": true,
+          "upstream_url": "https://raw.githubusercontent.com/py-gmssl/py-gmssl/454cf11df5d8ac9d7d74435e89e8a58aa8dcbb85/gmssl/sm3.py"
+        },
+        {
+          "file": "sm4.py",
+          "sha256": "15856256aa0f6430b88dff2587fc34b4c8d718ccb64467b52566ec09ee6c7716",
+          "identical": true,
+          "upstream_url": "https://raw.githubusercontent.com/py-gmssl/py-gmssl/454cf11df5d8ac9d7d74435e89e8a58aa8dcbb85/gmssl/sm4.py"
+        }
+      ],
+      "metadata_path": ".runtime/python/Lib/site-packages/gmssl-3.2.2.dist-info/METADATA",
+      "metadata_sha256": "2ad6358f45069de4760f5d56e4368fec05ca23102aacd945d2a661cb183b224d",
+      "boundary": "Distribution metadata says BSD, while the upstream License file at the exact source-matching commit says MIT. Preserve both facts. This supplement does not resolve the inconsistency by changing metadata, inventing BSD terms, or substituting the unrelated GmSSL C project license."
+    },
+    {
+      "name": "toggle-selection",
+      "version": "1.0.6",
+      "distribution_metadata_license": "MIT",
+      "upstream_license_heading": "MIT License",
+      "version_commit": "466460c75ca40630d8de940490718247fce79a3e",
+      "upstream_commit": "538dc4e9de40b8aee41f1e9066a4c5de3f4adc0a",
+      "license_url": "https://raw.githubusercontent.com/sudodoki/toggle-selection/538dc4e9de40b8aee41f1e9066a4c5de3f4adc0a/LICENSE",
+      "license_sha256": "771e50e27b24269923639e8e0cc650e7187ffeab5726f6a6f47d9ea83865089d",
+      "npm_metadata_url": "https://registry.npmjs.org/toggle-selection/1.0.6",
+      "npm_tarball_url": "https://registry.npmjs.org/toggle-selection/-/toggle-selection-1.0.6.tgz",
+      "npm_tarball_sha256": "c4537a15bc273c755ab6dcd8df8de87df05dccc7e11190c0c25d13e7b368172b",
+      "npm_tarball_sha1_matches_registry": true,
+      "npm_tarball_has_license_text": false,
+      "index_js_sha256": "d1a1caf366f8ae5ed3cf4a87c42c46e73bb5536acbcbc5ca479c180d4d3e7756",
+      "index_js_matches_both_commits": true,
+      "license_commit_direct_parent_is_version_commit": true,
+      "license_commit_changed_files": [
+        "LICENSE"
+      ],
+      "boundary": "The 1.0.6 tarball omitted the full license. The direct next upstream commit added only LICENSE and its index.js is byte-identical to the 1.0.6 tarball. The original tarball and package metadata are not modified."
+    }
+  ]
+}

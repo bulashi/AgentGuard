@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/result-retrieval-request.schema.json",
+  "title": "ResultRetrievalRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "credential_chain", "holder_proof", "task_id", "execution_id",
+    "receipt_id", "request_id", "issued_at"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "credential_chain": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 17,
+      "items": {
+        "oneOf": [
+          { "$ref": "capability-credential.schema.json" },
+          { "$ref": "delegation-credential.schema.json" }
+        ]
+      }
+    },
+    "holder_proof": { "$ref": "holder-proof.schema.json" },
+    "task_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "execution_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" },
+    "receipt_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" },
+    "request_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "issued_at": { "$ref": "common.schema.json#/$defs/timestamp" }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "execution_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "receipt_id": { "type": "null" }
+      }
+    },
+    {
+      "properties": {
+        "execution_id": { "type": "null" },
+        "receipt_id": { "$ref": "common.schema.json#/$defs/identifier" }
+      }
+    }
+  ]
+}
+

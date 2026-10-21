@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "business_identifier_profile": "CHINESE_TENANT_CUSTOMER_V1_20261007",
+  "canonicalization": "RFC8785 with AgentGuard strict schema profile",
+  "hash_algorithm": "SM3",
+  "signature_algorithm": "SM2",
+  "signature_encoding": "SM2_RS_HEX_128_LOWERCASE",
+  "hash_encoding": "HEX_64_LOWERCASE",
+  "sm2_user_id_utf8": "1234567812345678",
+  "crypto_profile": "crypto-profile.json",
+  "max_safe_integer": 9007199254740991,
+  "freshness_window_seconds": 60,
+  "allowed_clock_skew_seconds": 5,
+  "execution_envelope_ttl_seconds": 30,
+  "execution_states": [
+    "RECEIVED",
+    "DENIED",
+    "ADMITTED",
+    "DISPATCHED",
+    "UNKNOWN",
+    "RECONCILING",
+    "COMMITTED",
+    "RELEASED",
+    "RECOVERY_FAILED_FINAL"
+  ],
+  "key_states": ["ACTIVE", "RETIRED", "REVOKED", "COMPROMISED"],
+  "key_material_states": ["PRESENT", "DESTROYED"],
+  "receipt_statuses": ["NOT_REQUIRED", "PENDING", "SIGNED", "FAILED_RETRYABLE"],
+  "idempotency_statuses": [
+    "IN_PROGRESS",
+    "ADMITTED",
+    "DISPATCHED",
+    "UNKNOWN",
+    "RECONCILING",
+    "COMMITTED",
+    "RELEASED"
+  ]
+}

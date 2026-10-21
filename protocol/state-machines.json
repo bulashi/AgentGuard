@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "execution": {
+    "states": [
+      "RECEIVED",
+      "DENIED",
+      "ADMITTED",
+      "DISPATCHED",
+      "UNKNOWN",
+      "RECONCILING",
+      "COMMITTED",
+      "RELEASED",
+      "RECOVERY_FAILED_FINAL"
+    ],
+    "initial": "RECEIVED",
+    "terminal": ["DENIED", "COMMITTED", "RELEASED", "RECOVERY_FAILED_FINAL"],
+    "transitions": {
+      "RECEIVED": ["DENIED", "ADMITTED"],
+      "DENIED": [],
+      "ADMITTED": ["DISPATCHED", "RELEASED"],
+      "DISPATCHED": ["COMMITTED", "RELEASED", "UNKNOWN"],
+      "UNKNOWN": ["RECONCILING"],
+      "RECONCILING": ["COMMITTED", "RELEASED", "RECOVERY_FAILED_FINAL"],
+      "COMMITTED": [],
+      "RELEASED": [],
+      "RECOVERY_FAILED_FINAL": []
+    }
+  },
+  "receipt": {
+    "states": ["NOT_REQUIRED", "PENDING", "SIGNED", "FAILED_RETRYABLE"],
+    "transitions": {
+      "NOT_REQUIRED": ["PENDING"],
+      "PENDING": ["SIGNED", "FAILED_RETRYABLE"],
+      "SIGNED": [],
+      "FAILED_RETRYABLE": ["PENDING", "SIGNED"]
+    }
+  },
+  "key": {
+    "states": ["ACTIVE", "RETIRED", "REVOKED", "COMPROMISED"],
+    "transitions": {
+      "ACTIVE": ["RETIRED", "REVOKED", "COMPROMISED"],
+      "RETIRED": ["REVOKED", "COMPROMISED"],
+      "REVOKED": [],
+      "COMPROMISED": []
+    }
+  }
+}
+

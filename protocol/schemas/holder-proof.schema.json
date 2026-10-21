@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/holder-proof.schema.json",
+  "title": "HolderProof",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload", "signature"],
+  "properties": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "credential_chain_hash", "task_id", "tool_service", "tool_name",
+        "tool_version", "canonical_parameter_hash", "request_id", "issued_at",
+        "business_action_id"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+        "credential_chain_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "task_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "tool_service": { "$ref": "common.schema.json#/$defs/serviceName" },
+        "tool_name": { "$ref": "common.schema.json#/$defs/toolName" },
+        "tool_version": { "$ref": "common.schema.json#/$defs/toolVersion" },
+        "canonical_parameter_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "request_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "issued_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+        "business_action_id": { "$ref": "common.schema.json#/$defs/nullableIdentifier" }
+      }
+    },
+    "signature": { "$ref": "common.schema.json#/$defs/signature" }
+  }
+}

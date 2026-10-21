@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/workflow-start.schema.json",
+  "title": "StartOperationalWorkflow",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "runtime_mode": {"type": "string", "enum": ["deterministic", "local", "cloud"], "default": "deterministic"},
+    "scenario": {"type": "string", "enum": ["normal", "policy_injection"], "default": "normal"},
+    "cloud_data_confirmed": {"type": "boolean", "default": false},
+    "custom_injection_text": {"type": ["string", "null"], "minLength": 1, "maxLength": 4096, "pattern": "^(?![\\s\\S]*\\u0000)[\\s\\S]*\\S[\\s\\S]*$", "default": null}
+  },
+  "allOf": [{"if": {"properties": {"custom_injection_text": {"type": "string"}}, "required": ["custom_injection_text"]}, "then": {"properties": {"scenario": {"const": "policy_injection"}}, "required": ["scenario"]}}]
+}

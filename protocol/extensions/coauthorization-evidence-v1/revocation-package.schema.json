@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-evidence-v1/revocation-package.schema.json",
+  "title": "AgentGuard Pinned Coauthorization Revocation Evidence Package V1",
+  "$comment": "All recorded pages plus one selected root authorization and the complete pinned prefix. Trust pins and the checkpoint must be supplied separately.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "record_type", "authorization_package", "revocation_pages"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "record_type": { "const": "COAUTH_REVOCATION_EVIDENCE_PACKAGE_V1" },
+    "authorization_package": { "$ref": "package.schema.json" },
+    "revocation_pages": {
+      "type": "array", "minItems": 1, "maxItems": 10000,
+      "items": { "$ref": "https://agentguard.local/extensions/coauthorization-v1/revocation-audit-evidence.schema.json" }
+    }
+  }
+}

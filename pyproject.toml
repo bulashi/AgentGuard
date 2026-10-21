@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentguard"
+version = "0.1.0"
+description = "Cryptographically verifiable capability gateway for AI agents"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi==0.117.1",
+  "gmssl==3.2.2",
+  "httpx==0.28.1",
+  "jsonschema==4.25.1",
+  "psycopg[binary]==3.2.10",
+  "psutil==7.2.2",
+  "pydantic==2.11.9",
+  "pydantic-settings==2.10.1",
+  "PyYAML==6.0.2",
+  "rfc8785==0.1.4",
+  "SQLAlchemy==2.0.43",
+  "uvicorn[standard]==0.36.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "locust==2.40.4",
+  "pglast==8.4",
+  "pytest==8.4.2",
+  "pytest-asyncio==1.2.0",
+  "pytest-cov==7.0.0",
+  "ruff==0.13.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "integration: requires service or database integration",
+  "security: deterministic security property test",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# Chinese business prose intentionally uses full-width punctuation.
+"backend/agent_runtime/workflow_planner.py" = ["RUF001"]
+"backend/agent_runtime/model_client.py" = ["RUF001"]
+"backend/config/model_profiles.py" = ["RUF001"]
+"backend/ui_api/app.py" = ["RUF001"]
+"backend/ui_api/operator_session.py" = ["RUF001"]
+"backend/agent_runtime/service.py" = ["RUF001"]
+"backend/tools/demo_materials.py" = ["RUF001"]
+"backend/tools/notification_templates.py" = ["RUF001"]
+"backend/agent_runtime/knowledge_attacks.py" = ["RUF001"]
+"scripts/seed_demo.py" = ["RUF001"]
+"scripts/verify_current_cloud.py" = ["RUF001"]

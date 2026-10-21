@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/coauthorization-v1/coauthorization-bundle.schema.json",
+  "title": "AgentGuard Standalone Coauthorization V1 Evidence Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload", "approvals"],
+  "properties": {
+    "payload": { "$ref": "approval-payload.schema.json" },
+    "approvals": {
+      "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/approvalEvidence" },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object", "required": ["statement"],
+            "properties": {
+              "statement": {
+                "type": "object", "required": ["role"],
+                "properties": { "role": { "const": "ENTERPRISE_APPROVER" } }
+              }
+            }
+          },
+          "minContains": 1, "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object", "required": ["statement"],
+            "properties": {
+              "statement": {
+                "type": "object", "required": ["role"],
+                "properties": { "role": { "const": "FINANCE_APPROVER" } }
+              }
+            }
+          },
+          "minContains": 1, "maxContains": 1
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,950 @@
+{
+  "schema_version": "1.0",
+  "suite": "agentguard-deterministic-security",
+  "llm_required": false,
+  "success_invariant": "unauthorized_side_effects == 0",
+  "scenarios": [
+    {
+      "id": "malformed_json",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[malformed_json]",
+      "execution_layer": "gateway_http_parse",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "raw_parse",
+      "attacker_capability": "network_input",
+      "target_invariant": "RAW_REQUEST_REJECTED is chained without an execution",
+      "expected_decision": "REJECT_AT_PARSE",
+      "expected_reason_codes": ["MALFORMED_JSON"],
+      "expected_business_effects": 0,
+      "evidence": ["RejectedAuditEvent", "raw_request_hash", "audit_chain"]
+    },
+    {
+      "id": "invalid_utf8",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[invalid_utf8]",
+      "execution_layer": "gateway_http_parse",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "raw_parse",
+      "attacker_capability": "network_input",
+      "target_invariant": "invalid bytes cannot establish RequestContext",
+      "expected_decision": "REJECT_AT_PARSE",
+      "expected_reason_codes": ["INVALID_UTF8"],
+      "expected_business_effects": 0,
+      "evidence": ["RejectedAuditEvent", "raw_request_hash", "audit_chain"]
+    },
+    {
+      "id": "duplicate_json_key",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[duplicate_json_key]",
+      "execution_layer": "gateway_http_parse",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "raw_parse",
+      "attacker_capability": "network_input",
+      "target_invariant": "ambiguous canonical input is rejected before authorization",
+      "expected_decision": "REJECT_AT_PARSE",
+      "expected_reason_codes": ["DUPLICATE_FIELD"],
+      "expected_business_effects": 0,
+      "evidence": ["RejectedAuditEvent", "raw_request_hash", "audit_chain"]
+    },
+    {
+      "id": "unknown_field",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[unknown_field]",
+      "execution_layer": "gateway_http_parse",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "schema",
+      "attacker_capability": "network_input",
+      "target_invariant": "strict schema boundary rejects unknown security fields",
+      "expected_decision": "REJECT_AT_SCHEMA",
+      "expected_reason_codes": ["UNKNOWN_FIELD", "REQUEST_SCHEMA_INVALID"],
+      "expected_business_effects": 0,
+      "evidence": ["RejectedAuditEvent", "raw_request_hash", "audit_chain"]
+    },
+    {
+      "id": "credential_tampering",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[credential_tampering]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "authorization",
+      "attacker_capability": "modify_historical_credential",
+      "target_invariant": "persisted signed credential object and hash remain bound",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["INVALID_SIGNATURE"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "wrong_holder",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[wrong_holder]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "holder_proof",
+      "attacker_capability": "use_credential_without_leaf_key",
+      "target_invariant": "Holder Proof signer must equal leaf holder",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["WRONG_HOLDER", "INVALID_SIGNATURE"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "wrong_holder_key",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[wrong_holder_key]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "holder_proof",
+      "attacker_capability": "substitute_holder_key_id",
+      "target_invariant": "Holder Proof key identity is bound to leaf credential",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["WRONG_HOLDER", "INVALID_SIGNATURE"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "cross_tenant",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[cross_tenant]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "identity_binding",
+      "attacker_capability": "cross_tenant_request_substitution",
+      "target_invariant": "credential tenant equals trusted task tenant",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["CROSS_TENANT", "CROSS_TASK"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "business_db", "audit_chain"]
+    },
+    {
+      "id": "cross_task",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[cross_task]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "identity_binding",
+      "attacker_capability": "cross_task_request_substitution",
+      "target_invariant": "credential and RequestEnvelope task IDs remain equal",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["CROSS_TASK"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "business_db", "audit_chain"]
+    },
+    {
+      "id": "wrong_audience",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[wrong_audience]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim",
+          "submitted_audience_substitution; frozen_schema_rejects_before_signature_verification"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "authorization",
+      "attacker_capability": "audience_substitution",
+      "target_invariant": "credential audience is secure-tool-gateway",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["REQUEST_SCHEMA_INVALID"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "wrong_service",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[wrong_service]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "capability",
+      "attacker_capability": "tool_intent_service_substitution",
+      "target_invariant": "requested service must be in the leaf capability set",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["TOOL_NOT_ALLOWED", "SERVICE_NOT_ALLOWED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "tool_version_mismatch",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[tool_version_mismatch]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "capability",
+      "attacker_capability": "tool_version_substitution",
+      "target_invariant": "tool version is bound by capability and envelope",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["TOOL_VERSION_MISMATCH", "TOOL_NOT_ALLOWED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "child_privilege_escalation",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[child_privilege_escalation]",
+      "execution_layer": "delegation_http",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "delegation",
+      "attacker_capability": "delegation_request_expansion",
+      "target_invariant": "child capability is a monotone subset of parent",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["DELEGATION_ESCALATION"],
+      "expected_business_effects": 0,
+      "evidence": ["delegation_error", "no_partial_credential", "budget_state"]
+    },
+    {
+      "id": "parent_hash_tampering",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[parent_hash_tampering]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "delegation",
+      "attacker_capability": "replace_parent_signed_object",
+      "target_invariant": "child binds the actual persisted parent signed-object hash",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["INVALID_SIGNATURE", "DELEGATION_ESCALATION"],
+      "expected_business_effects": 0,
+      "evidence": ["chain_verification_error", "no_tool_call"]
+    },
+    {
+      "id": "invalid_delegation_signer",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[invalid_delegation_signer]",
+      "execution_layer": "delegation_http",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "delegation",
+      "attacker_capability": "sign_child_with_wrong_key",
+      "target_invariant": "issuer key subject equals parent holder",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["WRONG_HOLDER", "INVALID_SIGNATURE"],
+      "expected_business_effects": 0,
+      "evidence": ["delegation_error", "no_partial_credential"]
+    },
+    {
+      "id": "ancestor_revoked",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[ancestor_revoked]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "revocation",
+      "attacker_capability": "use_descendant_after_ancestor_revoke",
+      "target_invariant": "ancestor revocation invalidates descendants at admission",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["ANCESTOR_REVOKED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "revocation_row", "audit_chain"]
+    },
+    {
+      "id": "expired_credential",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[expired_credential]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "freshness",
+      "attacker_capability": "reuse_expired_authorization",
+      "target_invariant": "credential/task lifetime is checked against gateway time",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["CREDENTIAL_EXPIRED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "stale_request",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[stale_request]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "freshness",
+      "attacker_capability": "replay_old_request_with_new_transport",
+      "target_invariant": "issued_at is within the bounded gateway freshness window",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["REQUEST_STALE"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "request_replay",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[request_replay]",
+      "execution_layer": "gateway_http_dispatch",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "replay",
+      "attacker_capability": "replay_same_request_id",
+      "target_invariant": "request_id is linearized exactly once",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["REPLAY_DETECTED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "replay_record", "audit_chain"]
+    },
+    {
+      "id": "negative_amount",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[negative_amount]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "parameter",
+      "attacker_capability": "negative_business_parameter",
+      "target_invariant": "protected tool parameter domain is positive integer",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["REQUEST_SCHEMA_INVALID"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "business_db", "budget_state"]
+    },
+    {
+      "id": "integer_overflow",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[integer_overflow]",
+      "execution_layer": "gateway_http_parse",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "parameter",
+      "attacker_capability": "out_of_range_integer",
+      "target_invariant": "canonical integer and business bound are enforced",
+      "expected_decision": "REJECT_AT_PARSE",
+      "expected_reason_codes": ["REQUEST_SCHEMA_INVALID"],
+      "expected_business_effects": 0,
+      "evidence": ["RejectedAuditEvent", "raw_request_hash", "no_execution_or_receipt", "business_db", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "parameter_tampering_after_signature",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[parameter_tampering_after_signature]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "holder_proof",
+      "attacker_capability": "modify_parameters_after_holder_signature",
+      "target_invariant": "verified parameters equal executed parameters",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["INVALID_SIGNATURE"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "business_db", "audit_chain"]
+    },
+    {
+      "id": "budget_overflow",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[budget_overflow]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "budget",
+      "attacker_capability": "request_more_than_shared_budget",
+      "target_invariant": "reserved + committed never exceeds every chain-level limit",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["BUDGET_EXCEEDED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "concurrent_double_spend",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[concurrent_double_spend]",
+      "execution_layer": "gateway_http_dispatch",
+      "evidence_scope": {
+        "measurement": "scenario_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 1,
+        "notifications": 0
+      },
+      "category": "concurrency",
+      "attacker_capability": "concurrent_distinct_refund_requests",
+      "target_invariant": "real effect and committed amount stay within root budget",
+      "expected_decision": "ONE_ALLOW_ONE_DENY",
+      "expected_reason_codes": ["BUDGET_EXCEEDED"],
+      "expected_business_effects": "<= authorized limit",
+      "evidence": ["Signed Receipt(s)", "budget_state", "refund_db", "audit_chain"]
+    },
+    {
+      "id": "same_action_same_params_retry",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[same_action_same_params_retry]",
+      "execution_layer": "gateway_http_dispatch",
+      "evidence_scope": {
+        "measurement": "scenario_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 1,
+        "notifications": 0
+      },
+      "category": "idempotency",
+      "attacker_capability": "network_retry_with_fresh_request_id",
+      "target_invariant": "same trusted action and parameters reuse one execution/effect",
+      "expected_decision": "IDEMPOTENT_RETURN",
+      "expected_reason_codes": ["ALLOWED"],
+      "expected_business_effects": 1,
+      "evidence": ["existing_receipt", "one_effect", "retry_audit"]
+    },
+    {
+      "id": "same_action_different_params",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[same_action_different_params]",
+      "execution_layer": "gateway_http_dispatch",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "idempotency",
+      "attacker_capability": "change_parameters_on_same_business_action",
+      "target_invariant": "business action identity cannot be reused with a different parameter hash",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["IDEMPOTENCY_CONFLICT"],
+      "expected_business_effects": "<= 1",
+      "evidence": ["Signed DENY ExecutionReceipt", "conflict_evidence", "business_db"]
+    },
+    {
+      "id": "different_action_same_params",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[different_action_same_params]",
+      "execution_layer": "gateway_http_dispatch",
+      "evidence_scope": {
+        "measurement": "scenario_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 2,
+        "notifications": 0
+      },
+      "category": "idempotency",
+      "attacker_capability": "request_two_trusted_action_slots",
+      "target_invariant": "distinct trusted actions are evaluated independently but still share budget",
+      "expected_decision": "RECHECK_AUTHORIZATION",
+      "expected_reason_codes": ["ALLOWED", "BUDGET_EXCEEDED"],
+      "expected_business_effects": "within budget",
+      "evidence": ["normal receipt or deny receipt", "budget_state", "business_db"]
+    },
+    {
+      "id": "crash_after_tool_success",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[crash_after_tool_success]",
+      "execution_layer": "http_postgres_recovery_with_owned_fault_driver",
+      "evidence_scope": {
+        "measurement": "scenario_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim",
+          "production_dispatch_transition_in_owned_test_driver"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 1,
+        "notifications": 0
+      },
+      "category": "recovery",
+      "attacker_capability": "process_failure_after_downstream_effect",
+      "target_invariant": "recovery commits observed effect once and preserves evidence",
+      "expected_decision": "RECOVER",
+      "expected_reason_codes": ["ALLOWED"],
+      "expected_business_effects": 1,
+      "evidence": ["recovery_receipt", "one_effect", "budget_state", "audit_chain"]
+    },
+    {
+      "id": "timeout_retry",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[timeout_retry]",
+      "execution_layer": "http_postgres_recovery_with_owned_fault_driver",
+      "evidence_scope": {
+        "measurement": "scenario_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim",
+          "production_dispatch_transition_in_owned_test_driver"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 1,
+        "notifications": 0
+      },
+      "category": "recovery",
+      "attacker_capability": "transport_timeout_and_retry",
+      "target_invariant": "unknown outcome is reconciled without a second effect",
+      "expected_decision": "RECOVER",
+      "expected_reason_codes": ["ALLOWED", "TOOL_EXECUTION_UNKNOWN"],
+      "expected_business_effects": "<= 1",
+      "evidence": ["recovery_audit", "receipt", "one_effect"]
+    },
+    {
+      "id": "revocation_race",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[revocation_race]",
+      "execution_layer": "http_admission_revocation_with_postgres_lock_order",
+      "evidence_scope": {
+        "measurement": "scenario_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "revocation",
+      "attacker_capability": "race_admission_against_revoke",
+      "target_invariant": "admission commit order is the revocation linearization boundary",
+      "expected_decision": "LINEARIZED",
+      "expected_reason_codes": ["ANCESTOR_REVOKED", "ALLOWED"],
+      "expected_business_effects": "within committed order",
+      "evidence": ["transaction order", "audit_chain", "budget_state"]
+    },
+    {
+      "id": "gateway_envelope_replay",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[gateway_envelope_replay]",
+      "execution_layer": "protected_tool_http_with_postgres_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim",
+          "production_dispatch_transition_in_test_process; no_gateway_settlement"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "tool_boundary",
+      "attacker_capability": "replay_gateway_signed_envelope",
+      "target_invariant": "execution_attempt_id is unique at the protected-tool boundary",
+      "expected_decision": "TOOL_DENY",
+      "expected_reason_codes": ["EXECUTION_ENVELOPE_REPLAY"],
+      "expected_business_effects": 0,
+      "evidence": ["tool_replay_event", "one_or_zero_effect"]
+    },
+    {
+      "id": "expired_gateway_envelope",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[expired_gateway_envelope]",
+      "execution_layer": "protected_tool_http_with_postgres_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim",
+          "production_dispatch_transition_in_test_process; no_gateway_settlement"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "tool_boundary",
+      "attacker_capability": "delay_gateway_envelope_until_expiry",
+      "target_invariant": "protected Tool checks envelope TTL and gateway signature",
+      "expected_decision": "TOOL_DENY",
+      "expected_reason_codes": ["EXECUTION_ENVELOPE_EXPIRED"],
+      "expected_business_effects": 0,
+      "evidence": ["tool_reject_event", "business_db"]
+    },
+    {
+      "id": "compromised_holder_key",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[compromised_holder_key]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "key_lifecycle",
+      "attacker_capability": "use_compromised_leaf_key",
+      "target_invariant": "compromised key cannot create a new admission",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["KEY_COMPROMISED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "key_registry", "audit_chain"]
+    },
+    {
+      "id": "result_retrieval_after_revocation",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[result_retrieval_after_revocation]",
+      "execution_layer": "gateway_http_result_retrieval",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "retrieval",
+      "attacker_capability": "retrieve_old_result_after_ancestor_revoke",
+      "target_invariant": "retrieval rechecks current chain and revocation",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["ANCESTOR_REVOKED", "RESULT_ACCESS_DENIED"],
+      "expected_business_effects": 0,
+      "evidence": ["retrieval_audit", "no_new_effect", "no_new_receipt"]
+    },
+    {
+      "id": "result_retrieval_replay",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[result_retrieval_replay]",
+      "execution_layer": "gateway_http_result_retrieval",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "retrieval",
+      "attacker_capability": "replay_retrieval_request_id",
+      "target_invariant": "retrieval replay is a separate read-only namespace",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["REPLAY_DETECTED"],
+      "expected_business_effects": 0,
+      "evidence": ["retrieval_audit", "no_new_execution", "no_new_effect"]
+    },
+    {
+      "id": "prompt_injection_out_of_scope",
+      "test_ref": "backend/tests/security/test_scenario_ledger_postgres.py::test_scenario[prompt_injection_out_of_scope]",
+      "execution_layer": "gateway_http_admission",
+      "evidence_scope": {
+        "measurement": "attack_window",
+        "budget": "every_quota_at_every_credential_level",
+        "business": "scenario_tasks_and_isolated_database_global_deltas",
+        "legal_baseline_effects": "counted_before_attack; never_unauthorized",
+        "limits": [
+          "no_live_llm",
+          "no_external_audit_custody_claim",
+          "deterministic_untrusted_tool_intent; not_llm_susceptibility"
+        ]
+      },
+      "expected_effect_delta": {
+        "refunds": 0,
+        "notifications": 0
+      },
+      "category": "prompt_injection",
+      "attacker_capability": "malicious_external_document_controls_tool_intent",
+      "target_invariant": "untrusted plan cannot exceed structured authorization",
+      "expected_decision": "DENY",
+      "expected_reason_codes": ["RESOURCE_NOT_ALLOWED", "PARAMETER_CONSTRAINT_VIOLATION", "BUDGET_EXCEEDED"],
+      "expected_business_effects": 0,
+      "evidence": ["Signed DENY ExecutionReceipt", "business_db", "budget_state", "audit_chain"]
+    }
+  ]
+}

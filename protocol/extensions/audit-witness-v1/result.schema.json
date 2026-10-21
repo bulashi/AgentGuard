@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/extensions/audit-witness-v1/result.schema.json",
+  "title": "Machine readable audit witness operation result",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "record_type", "operation", "success", "verified", "reason_code", "store_modified", "report_file_written", "verification_scope", "checkpoint_domain", "event_hash_domain", "sm2_user_id", "signature_encoding", "authorizes_execution", "proves_latest_source_state", "proves_independent_custody", "proves_uncompromised_signer", "proves_signed_stream_identity", "proves_event_payloads", "proves_trusted_wall_clock"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "record_type": {"const": "AUDIT_WITNESS_RESULT_V1"},
+    "operation": {"enum": ["init", "advance", "verify", null]},
+    "success": {"type": "boolean"}, "verified": {"type": "boolean"},
+    "reason_code": {"type": "string", "pattern": "^AUDIT_WITNESS_[A-Z_]+$"},
+    "store_modified": {"type": ["boolean", "null"]}, "report_file_written": {"type": "boolean"},
+    "verification_scope": {"const": "CALLER_PINNED_CHECKPOINT_FULL_PREFIX_LOCAL_WITNESS"},
+    "checkpoint_domain": {"const": "AGENTGUARD|AUDIT_CHECKPOINT|V1"},
+    "event_hash_domain": {"const": "AGENTGUARD|AUDIT_EVENT_HASH|V1"},
+    "sm2_user_id": {"const": "1234567812345678"},
+    "signature_encoding": {"const": "SM2_RS_HEX_128_LOWERCASE"},
+    "stream_id": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/identifier"},
+    "trust_context_sm3": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex"},
+    "checkpoint_sm3": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex"},
+    "checkpoint_sequence": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger"},
+    "latest_event_sequence": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/positiveSafeInteger"},
+    "latest_event_hash": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex"},
+    "checked_events": {"type": "integer", "minimum": 1, "maximum": 10000},
+    "checked_witness_entries": {"type": "integer", "minimum": 0, "maximum": 128},
+    "witness_sequence": {"type": "integer", "minimum": 1, "maximum": 128},
+    "witness_sm3": {"$ref": "https://agentguard.local/schemas/common.schema.json#/$defs/sm3Hex"},
+    "authorizes_execution": {"const": false},
+    "proves_latest_source_state": {"const": false},
+    "proves_independent_custody": {"const": false},
+    "proves_uncompromised_signer": {"const": false},
+    "proves_signed_stream_identity": {"const": false},
+    "proves_event_payloads": {"const": false},
+    "proves_trusted_wall_clock": {"const": false}
+  },
+  "allOf": [
+    {"if": {"properties": {"verified": {"const": true}}}, "then": {
+      "required": ["stream_id", "trust_context_sm3", "checkpoint_sm3", "checkpoint_sequence", "latest_event_sequence", "latest_event_hash", "checked_events", "checked_witness_entries", "witness_sequence", "witness_sm3"]
+    }},
+    {"if": {"properties": {"success": {"const": true}}}, "then": {
+      "properties": {"verified": {"const": true}, "reason_code": {"const": "AUDIT_WITNESS_OK"}}
+    }}
+  ]
+}

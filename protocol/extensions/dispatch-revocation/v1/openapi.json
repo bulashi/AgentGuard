@@ -1,0 +1,713 @@
+{
+  "components": {
+    "schemas": {
+      "BusinessObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "notification_rows": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Notification Rows",
+            "type": "integer"
+          },
+          "refund_amount_fen": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Refund Amount Fen",
+            "type": "integer"
+          },
+          "refund_rows": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Refund Rows",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "refund_rows",
+          "notification_rows",
+          "refund_amount_fen"
+        ],
+        "title": "BusinessObservation",
+        "type": "object"
+      },
+      "CancellationEvidenceLink": {
+        "additionalProperties": false,
+        "properties": {
+          "audit_event_ids": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "type": "string"
+            },
+            "title": "Audit Event Ids",
+            "type": "array"
+          },
+          "cancellation_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Cancellation Id",
+            "type": "string"
+          },
+          "denied_execution_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Denied Execution Id",
+            "type": "string"
+          },
+          "denied_receipt_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denied Receipt Id"
+          },
+          "original_execution_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Original Execution Id",
+            "type": "string"
+          },
+          "reason_code": {
+            "enum": [
+              "ANCESTOR_REVOKED",
+              "KEY_REVOKED"
+            ],
+            "title": "Reason Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cancellation_id",
+          "reason_code",
+          "original_execution_id",
+          "denied_execution_id",
+          "denied_receipt_id",
+          "audit_event_ids"
+        ],
+        "title": "CancellationEvidenceLink",
+        "type": "object"
+      },
+      "RevocationExecutionObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "admitted_count": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Admitted Count",
+            "type": "integer"
+          },
+          "dispatched_or_unknown_count": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Dispatched Or Unknown Count",
+            "type": "integer"
+          },
+          "released_count": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Released Count",
+            "type": "integer"
+          },
+          "scope": {
+            "const": "TASK_SNAPSHOT",
+            "default": "TASK_SNAPSHOT",
+            "title": "Scope",
+            "type": "string"
+          }
+        },
+        "required": [
+          "released_count",
+          "dispatched_or_unknown_count",
+          "admitted_count"
+        ],
+        "title": "RevocationExecutionObservation",
+        "type": "object"
+      },
+      "RevocationVerificationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "$ref": "#/components/schemas/BusinessObservation"
+          },
+          "before": {
+            "$ref": "#/components/schemas/BusinessObservation"
+          },
+          "budget_unchanged": {
+            "title": "Budget Unchanged",
+            "type": "boolean"
+          },
+          "chain_signature_valid": {
+            "title": "Chain Signature Valid",
+            "type": "boolean"
+          },
+          "credential_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Credential Id",
+            "type": "string"
+          },
+          "execution_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Id"
+          },
+          "holder_key_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Holder Key Id",
+            "type": "string"
+          },
+          "holder_proof_valid": {
+            "title": "Holder Proof Valid",
+            "type": "boolean"
+          },
+          "new_holder_proof": {
+            "const": true,
+            "default": true,
+            "title": "New Holder Proof",
+            "type": "boolean"
+          },
+          "observed_at_ms": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Observed At Ms",
+            "type": "integer"
+          },
+          "reason_code": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Z][A-Z0-9_]*$",
+            "title": "Reason Code",
+            "type": "string"
+          },
+          "receipt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Id"
+          },
+          "receipt_valid": {
+            "title": "Receipt Valid",
+            "type": "boolean"
+          },
+          "record_binding_valid": {
+            "title": "Record Binding Valid",
+            "type": "boolean"
+          },
+          "request_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Request Hash",
+            "type": "string"
+          },
+          "request_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "task_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "credential_id",
+          "status",
+          "reason_code",
+          "request_id",
+          "request_hash",
+          "holder_key_id",
+          "holder_proof_valid",
+          "chain_signature_valid",
+          "receipt_valid",
+          "record_binding_valid",
+          "execution_id",
+          "receipt_id",
+          "before",
+          "after",
+          "budget_unchanged",
+          "observed_at_ms"
+        ],
+        "title": "RevocationVerificationResponse",
+        "type": "object"
+      },
+      "UiRevocationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "already_revoked": {
+            "title": "Already Revoked",
+            "type": "boolean"
+          },
+          "audit_event_ids": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "type": "string"
+            },
+            "title": "Audit Event Ids",
+            "type": "array"
+          },
+          "audit_status": {
+            "enum": [
+              "PENDING",
+              "RECORDED"
+            ],
+            "title": "Audit Status",
+            "type": "string"
+          },
+          "boundary": {
+            "const": "DISPATCH_BOUNDARY_NO_ROLLBACK",
+            "default": "DISPATCH_BOUNDARY_NO_ROLLBACK",
+            "title": "Boundary",
+            "type": "string"
+          },
+          "cancellations": {
+            "items": {
+              "$ref": "#/components/schemas/CancellationEvidenceLink"
+            },
+            "title": "Cancellations",
+            "type": "array"
+          },
+          "credential_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Credential Id",
+            "type": "string"
+          },
+          "descendant_count": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Descendant Count",
+            "type": "integer"
+          },
+          "execution_observation": {
+            "$ref": "#/components/schemas/RevocationExecutionObservation"
+          },
+          "revocation_reason": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Revocation Reason",
+            "type": "string"
+          },
+          "revoked_at": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Revoked At",
+            "type": "integer"
+          },
+          "revoked_by": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Revoked By",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "status": {
+            "const": "REVOKED",
+            "default": "REVOKED",
+            "title": "Status",
+            "type": "string"
+          },
+          "task_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "credential_id",
+          "revoked_by",
+          "revoked_at",
+          "revocation_reason",
+          "descendant_count",
+          "already_revoked",
+          "audit_status",
+          "audit_event_ids",
+          "cancellations",
+          "execution_observation"
+        ],
+        "title": "UiRevocationResponse",
+        "type": "object"
+      },
+      "UiRevokeCredentialRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmed": {
+            "const": true,
+            "title": "Confirmed",
+            "type": "boolean"
+          },
+          "reason": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmed",
+          "reason"
+        ],
+        "title": "UiRevokeCredentialRequest",
+        "type": "object"
+      },
+      "VerifyRevokedRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmed": {
+            "const": true,
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "confirmed"
+        ],
+        "title": "VerifyRevokedRequest",
+        "type": "object"
+      },
+      "WorkflowErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "reason_code": {
+            "title": "Reason Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason_code",
+          "message"
+        ],
+        "title": "WorkflowErrorResponse",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "OperatorSession": {
+        "in": "cookie",
+        "name": "agentguard_operator",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Task-scoped operator control. No browser keys, new grants or LLM calls.",
+    "title": "AgentGuard Credential Revocation UI Extension",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/tasks/{task_id}/credentials/{credential_id}/revoke": {
+      "post": {
+        "operationId": "revoke_credential_api_tasks__task_id__credentials__credential_id__revoke_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "title": "Task Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "credential_id",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "title": "Credential Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UiRevokeCredentialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UiRevocationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Revoke Credential"
+      }
+    },
+    "/api/tasks/{task_id}/credentials/{credential_id}/verify-revoked": {
+      "post": {
+        "operationId": "verify_revoked_credential_api_tasks__task_id__credentials__credential_id__verify_revoked_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "title": "Task Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "credential_id",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "title": "Credential Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRevokedRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevocationVerificationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Verify Revoked Credential"
+      }
+    }
+  },
+  "security": [
+    {
+      "OperatorSession": []
+    }
+  ]
+}

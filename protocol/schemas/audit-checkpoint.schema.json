@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.local/schemas/audit-checkpoint.schema.json",
+  "title": "AuditCheckpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload", "signature"],
+  "properties": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "checkpoint_sequence", "latest_event_sequence",
+        "latest_event_hash", "timestamp"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+        "checkpoint_sequence": { "$ref": "common.schema.json#/$defs/positiveSafeInteger" },
+        "latest_event_sequence": { "$ref": "common.schema.json#/$defs/positiveSafeInteger" },
+        "latest_event_hash": { "$ref": "common.schema.json#/$defs/sm3Hex" },
+        "timestamp": { "$ref": "common.schema.json#/$defs/timestamp" }
+      }
+    },
+    "signature": { "$ref": "common.schema.json#/$defs/signature" }
+  }
+}

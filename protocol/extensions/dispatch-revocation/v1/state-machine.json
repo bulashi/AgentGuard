@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "boundary": "DISPATCH_BOUNDARY_NO_ROLLBACK",
+  "linearization_point": "dispatch_transaction_commit_under_complete_credential_chain_locks",
+  "admission_decision_immutable": true,
+  "cancellation_record_immutable": true,
+  "transitions": [
+    {
+      "from": "ADMITTED", "event": "authorization_invalid_before_dispatch", "to": "RELEASED",
+      "original_decision": "ALLOW", "new_linked_decision": "DENY", "new_linked_state": "DENIED",
+      "budget": "release_all_applicable_reservations_atomically", "tool_dispatch": false
+    },
+    {
+      "from": "ADMITTED", "event": "current_authorization_valid", "to": "DISPATCHED",
+      "budget": "retain_reservations", "tool_dispatch": "signed_envelope_with_chain_bounded_expiry"
+    },
+    {
+      "from": "UNKNOWN", "event": "revocation_committed", "to": "UNKNOWN",
+      "budget": "retain_reservations", "tool_dispatch": false
+    },
+    {
+      "from": "RECONCILING", "event": "verified_existing_effect", "to": "COMMITTED",
+      "budget": "commit_all_applicable_reservations_once", "tool_dispatch": false
+    },
+    {
+      "from": "RECONCILING", "event": "verified_no_effect_with_late_effect_barrier", "to": "RELEASED",
+      "budget": "release_all_applicable_reservations_once", "tool_dispatch": false
+    }
+  ],
+  "revocation_does_not_recall": ["DISPATCHED", "UNKNOWN", "RECONCILING", "COMMITTED"],
+  "frozen_decision_and_terminal_time_contracts": ["0017_execution_terminal_time.sql", "0018_execution_decision_time.sql"],
+  "verification_probe": {
+    "new_holder_proof": true, "new_request_id": true, "new_authorization": false, "llm_required": false,
+    "supported_chain": ["agent-coordinator", "agent-case", "agent-refund"],
+    "expired_or_unsupported_chain": "REVOCATION_PROBE_CHAIN_UNAVAILABLE"
+  }
+}

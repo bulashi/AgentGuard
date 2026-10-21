@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "scope": "0019 administrative revocation extension",
+  "key": {
+    "ACTIVE": ["REVOKED", "COMPROMISED"],
+    "RETIRED": ["REVOKED", "COMPROMISED"],
+    "REVOKED": ["REVOKED", "COMPROMISED"],
+    "COMPROMISED": ["COMPROMISED"]
+  },
+  "policy": {"ACTIVE": ["REVOKED"], "RETIRED": ["REVOKED"], "REVOKED": ["REVOKED"]},
+  "root": {"NO_REVOCATION_RECORD": ["REVOKED"], "REVOKED": ["REVOKED"]},
+  "event": {
+    "source_key": ["tenant_id", "source_kind", "source_identifier"],
+    "successful_result": "RECORDED",
+    "retry": "Return the original event and time; never overwrite an existing root revocation.",
+    "busy": "Rollback source update, event and roots together; do not commit a partial cascade."
+  },
+  "not_retroactive": [
+    "Admission committed before revocation may finish.",
+    "Existing effects and execution reservations are not cancelled or released.",
+    "RETIREMENT alone does not cascade to historical roots.",
+    "MIGRATION_RECONCILIATION observes legacy inactive sources now; it is not an old signed event."
+  ]
+}

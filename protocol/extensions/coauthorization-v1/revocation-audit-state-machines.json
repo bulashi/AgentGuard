@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "scope": "0020 coauthorization revocation audit extension",
+  "transaction": {
+    "new_observation": "Source status, root revocations, observation, mappings and every canonical SM3 Outbox page must commit together.",
+    "missing_or_inconsistent_page": "Reject and roll back the whole new revocation transaction.",
+    "duplicate": "Validate the original complete pages; do not rewrite their payload, hash, capture time or status.",
+    "legacy_observation": "Link it only on an explicit later operation as LEGACY_OBSERVATION_LINK, without claiming that the old transaction contained this Outbox."
+  },
+  "outbox": {
+    "PENDING": ["APPENDED"],
+    "APPENDED": [],
+    "invalid_evidence": "Abort the append batch, never normalize a coauthorization revocation into EXECUTION_UNKNOWN."
+  },
+  "proof_observation": {
+    "PENDING": "Not in the chain; never show covered.",
+    "APPENDED_UNANCHORED": "One page is hash-linked, but the selected independent checkpoint does not cover it.",
+    "EXACT_PAGE_COVERED": "The exact page core matches the verified prefix and selected SM2-signed checkpoint.",
+    "COMPLETE_RECORDED_OBSERVATION_VERIFIED": "The file-only verifier checks every recorded page, counts, selected root binding, full pinned prefix and checkpoint."
+  },
+  "boundaries": [
+    "An audit page is not individually SM2-signed.",
+    "The complete recorded observation is not proof of all real-world principals, every other root signature, current live permissions or an independently observed database commit.",
+    "Effects admitted before revocation are not cancelled and UNKNOWN reservations are not released.",
+    "All referenced original hash/signature domains and V1/V2 encodings remain unchanged."
+  ]
+}

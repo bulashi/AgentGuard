@@ -1,0 +1,261 @@
+.liquid-glass-button[data-glass-tone][data-glass-busy] {
+  --lg-pointer-x: 50%;
+  --lg-pointer-y: 50%;
+  --lg-shift-x: 0px;
+  --lg-shift-y: 0px;
+  --lg-ink: var(--secondary);
+  --lg-border: var(--line);
+  --lg-border-hover: var(--accent-line);
+  --lg-glass: rgb(248 250 252 / 58%);
+  --lg-fallback: var(--surface);
+  --lg-focus: var(--accent);
+  --lg-shadow: rgb(24 35 46 / 12%);
+  --lg-edge-shadow: rgb(203 218 248 / 24%);
+  --lg-surface-shadow: inset 0 1px 1px rgb(255 255 255 / 98%),
+    inset 0 -2px 3px var(--lg-edge-shadow), 0 1px 1px rgb(24 35 46 / 8%), 0 3px 8px var(--lg-shadow);
+  --lg-material: linear-gradient(165deg, rgb(255 255 255 / 88%), rgb(255 255 255 / 28%) 38%,
+    rgb(203 218 248 / 20%) 62%, rgb(255 255 255 / 48%)),
+    linear-gradient(90deg, rgb(237 243 255 / 24%), transparent 35%, rgb(255 255 255 / 20%) 78%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--lg-ink);
+  border-color: var(--lg-border);
+  background-color: var(--lg-fallback);
+  background-image: var(--lg-material);
+  box-shadow: var(--lg-surface-shadow);
+  letter-spacing: 0;
+  opacity: 1;
+  transition: box-shadow 180ms ease, border-color 180ms ease, transform 140ms ease;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]:not(.ant-btn-circle):not(.ant-btn-round) {
+  border-radius: 8px;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy].ant-btn-two-chinese-chars::first-letter,
+.liquid-glass-button[data-glass-tone][data-glass-busy].ant-btn-two-chinese-chars > :not(.ant-btn-icon) {
+  letter-spacing: 0;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy].ant-btn-two-chinese-chars > :not(.ant-btn-icon) {
+  margin-inline-end: 0;
+}
+
+.liquid-glass-button[data-glass-tone='primary'][data-glass-busy] {
+  --lg-ink: var(--accent);
+  --lg-border: var(--accent-line);
+  --lg-border-hover: var(--accent);
+  --lg-glass: rgb(237 243 255 / 72%);
+  --lg-fallback: var(--accent-soft);
+  --lg-shadow: rgb(37 91 222 / 17%);
+  --lg-edge-shadow: rgb(203 218 248 / 27%);
+  font-weight: 600;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]:is(.ant-btn-dangerous, .ant-btn-color-dangerous) {
+  --lg-ink: var(--danger);
+  --lg-border: var(--danger-line);
+  --lg-border-hover: var(--danger);
+  --lg-glass: rgb(255 240 241 / 75%);
+  --lg-fallback: var(--danger-soft);
+  --lg-focus: var(--danger);
+  --lg-shadow: rgb(179 55 65 / 13%);
+  --lg-edge-shadow: rgb(240 207 211 / 21%);
+  --lg-material: linear-gradient(165deg, rgb(255 255 255 / 88%), rgb(255 255 255 / 28%) 38%,
+    rgb(240 207 211 / 20%) 62%, rgb(255 255 255 / 48%)),
+    linear-gradient(90deg, rgb(255 240 241 / 24%), transparent 35%, rgb(255 255 255 / 20%) 78%);
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]::before,
+.liquid-glass-button[data-glass-tone][data-glass-busy]::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  transition: opacity 180ms ease;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]::before {
+  inset: -3px;
+  background-image: linear-gradient(112deg, transparent 18%, rgb(255 255 255 / 20%) 32%,
+    rgb(255 255 255 / 94%) 43%, rgb(255 255 255 / 34%) 50%, transparent 66%),
+    linear-gradient(22deg, transparent 46%, rgb(255 255 255 / 32%) 57%, transparent 69%);
+  background-size: 200% 160%;
+  background-position: var(--lg-pointer-x) var(--lg-pointer-y);
+  transform: translate(var(--lg-shift-x), var(--lg-shift-y));
+  opacity: 0.72;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]::after {
+  inset: 1px;
+  border: 1px solid rgb(255 255 255 / 58%);
+  border-top-color: rgb(255 255 255 / 98%);
+  border-bottom-color: var(--lg-edge-shadow);
+  background: linear-gradient(178deg, rgb(255 255 255 / 34%), transparent 42%, rgb(255 255 255 / 18%));
+  box-shadow: inset 1px 0 1px rgb(255 255 255 / 86%), inset -1px 0 1px var(--lg-edge-shadow);
+  transform: translate(calc(var(--lg-shift-x) * -0.25), calc(var(--lg-shift-y) * -0.25));
+}
+
+/* Start with an opaque surface so unsupported backdrop filters retain contrast. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass-button[data-glass-tone][data-glass-busy] {
+    background-color: var(--lg-glass);
+    backdrop-filter: blur(12px) saturate(135%);
+    -webkit-backdrop-filter: blur(12px) saturate(135%);
+  }
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]:not(:disabled):not([aria-disabled='true']):is(:hover, :active) {
+  color: var(--lg-ink);
+  border-color: var(--lg-border-hover);
+  background-color: var(--lg-fallback);
+  background-image: var(--lg-material);
+  box-shadow: inset 0 1px 1px #fff, inset 0 -2px 3px var(--lg-edge-shadow),
+    0 1px 1px rgb(24 35 46 / 8%), 0 5px 12px var(--lg-shadow);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:not(:disabled):not([aria-disabled='true']):is(:hover, :active) {
+    background-color: var(--lg-glass);
+  }
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]:focus-visible {
+  outline: 2px solid var(--lg-focus);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .liquid-glass-button[data-glass-tone][data-glass-busy='false']:not(:disabled):not([aria-disabled='true']):hover {
+    transform: translateY(-1px);
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy='false']:not(:disabled):not([aria-disabled='true']):hover::before {
+    opacity: 0.95;
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy='false']:not(:disabled):not([aria-disabled='true']):active {
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px var(--lg-shadow), inset 0 1px 0 rgb(255 255 255 / 76%);
+  }
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true']),
+.liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true']):is(:hover, :active) {
+  color: var(--secondary);
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: none;
+  cursor: not-allowed;
+  transition: none;
+  transform: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true'])::before,
+.liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true'])::after {
+  display: none;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy='true'],
+.liquid-glass-button[data-glass-tone][data-glass-busy='true']:not(:disabled):not([aria-disabled='true']):is(:hover, :active),
+.liquid-glass-button[data-glass-tone][data-glass-busy='true']::before,
+.liquid-glass-button[data-glass-tone][data-glass-busy='true']::after {
+  transition: none;
+  transform: none;
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy='true']:not(:disabled):not([aria-disabled='true']),
+.liquid-glass-button[data-glass-tone][data-glass-busy='true']:not(:disabled):not([aria-disabled='true']):is(:hover, :active) {
+  border-color: var(--lg-border);
+  box-shadow: var(--lg-surface-shadow);
+}
+
+.liquid-glass-button[data-glass-tone][data-glass-busy='true']::before,
+.liquid-glass-button[data-glass-tone][data-glass-busy='true']:is(:hover, :active)::before {
+  background-position: 50% 50%;
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+  .liquid-glass-button[data-glass-tone][data-glass-busy],
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:not(:disabled):not([aria-disabled='true']):is(:hover, :active),
+  .liquid-glass-button[data-glass-tone][data-glass-busy]::before,
+  .liquid-glass-button[data-glass-tone][data-glass-busy]::after {
+    transition: none;
+    transform: none;
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy]::before {
+    background-position: 50% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass-button[data-glass-tone][data-glass-busy],
+  .liquid-glass-button[data-glass-tone][data-glass-busy] *,
+  .liquid-glass-button[data-glass-tone][data-glass-busy] *::before,
+  .liquid-glass-button[data-glass-tone][data-glass-busy] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .liquid-glass-button[data-glass-tone][data-glass-busy],
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:not(:disabled):not([aria-disabled='true']),
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:not(:disabled):not([aria-disabled='true']):is(:hover, :active) {
+    border-color: var(--lg-ink);
+    background: var(--lg-fallback);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: none;
+    transform: none;
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy]::before,
+  .liquid-glass-button[data-glass-tone][data-glass-busy]::after {
+    display: none;
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:focus-visible {
+    outline-width: 3px;
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true']),
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true']):is(:hover, :active) {
+    border-color: currentColor;
+  }
+}
+
+@media (forced-colors: active) {
+  .liquid-glass-button[data-glass-tone][data-glass-busy],
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:not(:disabled):not([aria-disabled='true']),
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:not(:disabled):not([aria-disabled='true']):is(:hover, :active) {
+    color: ButtonText;
+    border-color: ButtonText;
+    background: ButtonFace;
+    box-shadow: none;
+    transition: none;
+    transform: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy]::before,
+  .liquid-glass-button[data-glass-tone][data-glass-busy]::after {
+    display: none;
+  }
+
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:focus-visible { outline-color: Highlight; }
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true']),
+  .liquid-glass-button[data-glass-tone][data-glass-busy]:is(:disabled, [aria-disabled='true']):is(:hover, :active) {
+    color: GrayText;
+    border-color: GrayText;
+    background: ButtonFace;
+  }
+}
