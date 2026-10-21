@@ -4,7 +4,7 @@
 
 Download `AgentGuard-Windows-x64.zip` from GitHub Releases and extract it. Keep the complete `AgentGuard` directory. A writable path with English characters is recommended, such as `F:\AgentGuard`.
 
-Double-click `启动AgentGuard.cmd` to start. On first use, follow the initialization prompt; the launcher opens the workspace when setup completes. Initialization requires network access to download PostgreSQL. The downloaded archive is checked against the SHA-256 value pinned in the project.
+Double-click `启动AgentGuard.cmd` to start. On first use, follow the initialization prompt; the launcher opens the workspace when setup completes. The release includes a pinned PostgreSQL archive, which is verified and extracted during initialization. Network access is needed to download the archive only if it is missing. Downloaded archives are checked against the SHA-256 value pinned in the project.
 
 Deterministic planning needs no model setup. To use a cloud model, double-click `配置智能体.cmd` and enter your own model service URL, model name, and API key in the workspace. Cloud planning also requires the ticket to be eligible for sharing and explicit confirmation before data is sent.
 

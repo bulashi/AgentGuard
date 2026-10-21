@@ -124,7 +124,7 @@ flowchart LR
 4. Deterministic planning needs no model configuration. To use a cloud model, double-click `配置智能体.cmd` and enter your own service URL, model name, and API key in the workspace.
 5. Double-click `停止本机.cmd` when finished.
 
-The package includes a Windows x64 Python runtime and the application files. PostgreSQL is downloaded on first initialization and checked against the SHA-256 value pinned in the project. Later launches reuse the downloaded database component.
+The package includes a Windows x64 Python runtime, the application files, and a pinned PostgreSQL archive. First initialization verifies and extracts the bundled database archive. If the archive is missing, the launcher downloads it and checks it against the SHA-256 value pinned in the project. Later launches reuse the initialized components.
 
 See the [running guide](docs/RUNNING.en.md) for details. First launch creates a local database, keys, model configuration, and logs under `.native`. Do not commit or share this runtime state directory.
 
